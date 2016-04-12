@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
             mSocialNetworkManager.addSocialNetwork(new FacebookSocialNetwork(this, FacebookPermissions.getPermissions()));
         }
 
-        Button button = (Button) findViewById(R.id.button);
+        Button button = (Button) findViewById(R.id.fb_button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

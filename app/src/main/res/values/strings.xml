@@ -2,4 +2,5 @@
     <string name="app_name">SNLibrary</string>
 
     <string name="facebook_app_id" translatable="false">1120908654603858</string>
+    <string name="com_vk_sdk_AppId">5412454</string>
 </resources>

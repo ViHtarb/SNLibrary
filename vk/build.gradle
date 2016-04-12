@@ -21,6 +21,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.google.code.gson:gson:2.4'
-    compile 'com.android.support:support-v4:23.3.0'
+    compile project(':core')
+    compile ('com.vk:androidsdk:1.6.6') { exclude module: 'support-v4' }
 }
