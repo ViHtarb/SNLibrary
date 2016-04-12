@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.snl.core.listener.OnCheckIsFriendCompleteListener;
 import com.snl.core.listener.OnLoginCompleteListener;
 import com.snl.core.listener.OnPostingCompleteListener;
@@ -74,14 +75,10 @@ public abstract class SocialNetwork<T> {
     /*** Share bundle constant for picture*/
     public static final String BUNDLE_PICTURE = "picture";
 
-    /*** Shared preferences name */
-    //private static final String SHARED_PREFERENCES_NAME = "social_networks";
-    //protected SharedPreferences mSharedPreferences;
+    protected static final Gson GSON = new Gson();
 
     protected Map<String, SocialNetworkListener> mGlobalListeners = new HashMap<>();
     protected Map<String, SocialNetworkListener> mLocalListeners = new HashMap<>();
-
-    protected Map<String, String> test = new HashMap<>();
 
     private Context mContext;
 

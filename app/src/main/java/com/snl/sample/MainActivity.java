@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (!mSocialNetworkManager.isSocialNetworkExists(FacebookSocialNetwork.ID)) {
-            mSocialNetworkManager.addSocialNetwork(new FacebookSocialNetwork(this, FacebookPermissions.getFbPermission()));
+            mSocialNetworkManager.addSocialNetwork(new FacebookSocialNetwork(this, FacebookPermissions.getPermissions()));
         }
 
         Button button = (Button) findViewById(R.id.button);

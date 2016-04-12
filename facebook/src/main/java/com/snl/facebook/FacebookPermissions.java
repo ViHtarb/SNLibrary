@@ -18,10 +18,10 @@ public final class FacebookPermissions {
         // not instantiate
     }
 
-    public static List<String> getFbPermission() {
-        List<String> fbPermissions = new ArrayList<>();
-        fbPermissions.add("public_profile");
-        fbPermissions.add("email");
-        return fbPermissions;
+    public static List<String> getPermissions() {
+        List<String> permissions = new ArrayList<>();
+        permissions.add(PUBLIC_PROFILE);
+        permissions.add(EMAIL);
+        return permissions;
     }
 }

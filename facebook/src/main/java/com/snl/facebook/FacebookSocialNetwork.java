@@ -3,7 +3,6 @@ package com.snl.facebook;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -39,7 +38,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     public FacebookSocialNetwork(Activity context, List<String> permissions) {
         super(context);
 
-        String applicationId = Utility.getMetadataApplicationId(context);
+        String applicationId = Utility.getMetadataApplicationId(context.getApplicationContext());
 
         if (applicationId == null) {
             throw new IllegalStateException("applicationId can't be null\n" +
@@ -137,15 +136,13 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             public void onCompleted(JSONObject object, GraphResponse response) {
                 if (response.getError() != null) {
                     if (mLocalListeners.get(REQUEST_GET_CURRENT_PERSON) != null) {
-                        mLocalListeners.get(REQUEST_GET_CURRENT_PERSON).onError(
-                                getId(), REQUEST_GET_CURRENT_PERSON, response.getError().getErrorMessage(), null);
+                        mLocalListeners.get(REQUEST_GET_CURRENT_PERSON).onError(getId(), REQUEST_GET_CURRENT_PERSON, response.getError().getErrorMessage(), null);
                     }
                     return;
                 }
 
                 if (mLocalListeners.get(REQUEST_GET_CURRENT_PERSON) != null) {
-                    SocialPerson person = new SocialPerson();
-                    getSocialPerson(person, object);
+                    SocialPerson person = parsePerson(object);
 
                     ((OnRequestSocialPersonCompleteListener) mLocalListeners.get(REQUEST_GET_CURRENT_PERSON))
                             .onRequestSocialPersonSuccess(getId(), person);
@@ -157,6 +154,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
         super.requestDetailedSocialPerson(userId, onRequestDetailedSocialPersonCompleteListener);
 
@@ -175,20 +173,16 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             public void onCompleted(JSONObject object, GraphResponse response) {
                 if (response.getError() != null) {
                     if (mLocalListeners.get(REQUEST_GET_DETAIL_PERSON) != null) {
-                        mLocalListeners.get(REQUEST_GET_DETAIL_PERSON).onError(
-                                getId(), REQUEST_GET_DETAIL_PERSON, response.getError().getErrorMessage(), null);
+                        mLocalListeners.get(REQUEST_GET_DETAIL_PERSON).onError(getId(), REQUEST_GET_DETAIL_PERSON, response.getError().getErrorMessage(), null);
                     }
                     return;
                 }
 
                 if (mLocalListeners.get(REQUEST_GET_DETAIL_PERSON) != null) {
-                    FacebookPerson person = new FacebookPerson();
-                    getDetailedPerson(person, object);
-
-                    Log.d("TEST", object.toString());
+                    FacebookPerson person = parsePerson(object);
 
                     ((OnRequestDetailedSocialPersonCompleteListener) mLocalListeners.get(REQUEST_GET_DETAIL_PERSON))
-                            .onRequestDetailedSocialPersonSuccess(getId(), person);
+                        .onRequestDetailedSocialPersonSuccess(getId(), person);
                 }
             }
         });
@@ -196,22 +190,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
         request.executeAsync();
     }
 
-    private void getSocialPerson(SocialPerson person, JSONObject object) {
-        person.setId(object.optString("id"));
-        person.setName(object.optString("name"));
-        person.setProfileURL(object.optString("link"));
-        person.setAvatarURL("http://graph.facebook.com/"+ person.getId()+ "/picture?type=large");
-        person.setEmail(object.optString("email"));
-    }
-
-    private void getDetailedPerson(FacebookPerson person, JSONObject object) {
-        getSocialPerson(person, object);
-
-        person.setFirstName(object.optString("first_name"));
-        person.setMiddleName(object.optString("middle_name"));
-        person.setLastName(object.optString("last_name"));
-        person.setGender(object.optString("gender"));
-        person.setBirthday(object.optString("birthday"));
-        person.setVerified(object.optString("verified"));
+    private static FacebookPerson parsePerson(JSONObject person) {
+        return GSON.fromJson(person.toString(), FacebookPerson.class);
     }
 }

@@ -47,7 +47,6 @@ public class SocialNetworkManager {
         if (isSocialNetworkExists(socialNetwork.getId())) {
             throw new SocialNetworkException("Social network with id = " + socialNetwork.getId() + " already exists");
         }
-
         mSocialNetworks.put(socialNetwork.getId(), socialNetwork);
     }
 
@@ -62,5 +61,4 @@ public class SocialNetworkManager {
             socialNetwork.onActivityResult(requestCode, resultCode, data);
         }
     }
-
 }

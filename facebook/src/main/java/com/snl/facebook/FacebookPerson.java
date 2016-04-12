@@ -1,14 +1,14 @@
 package com.snl.facebook;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
 import com.snl.core.SocialPerson;
 
 /**
  * Created by Viнt@rь on 28.11.2015
  */
-public class FacebookPerson extends SocialPerson implements Parcelable {
+public class FacebookPerson implements SocialPerson {
 
     public static final Creator<FacebookPerson> CREATOR = new Creator<FacebookPerson>() {
         public FacebookPerson createFromParcel(Parcel in) {
@@ -20,32 +20,47 @@ public class FacebookPerson extends SocialPerson implements Parcelable {
         }
     };
 
-    /*** First mName of social person*/
-    private String mFirstName;
-    /*** Middle name of social person*/
-    private String mMiddleName;
-    /*** Last name of social person*/
-    private String mLastName;
-    /*** Sex of social person*/
-    private String mGender;
-    /*** mBirthday of social person in the format MM/DD/YYYY*/
-    private String mBirthday;
-    /*** mCity of social person from user*/
-    private String mCity;
-    /*** Check if user is mVerified*/
-    private String mVerified;
+    @SerializedName("id")
+    private String mId; // Id of social person from chosen social network.
 
-    public FacebookPerson() {
+    @SerializedName("name")
+    private String mName; // Name of social person from social network.
 
-    }
+    @SerializedName("link")
+    private String mProfileURL; // Profile URL of social person from social network.
+
+    @SerializedName("email")
+    private String mEmail; // Email of social person from social network if exist.
+
+    @SerializedName("first_name")
+    private String mFirstName; // First mName of social person
+
+    @SerializedName("middle_name")
+    private String mMiddleName; // Middle name of social person
+
+    @SerializedName("last_name")
+    private String mLastName; // Last name of social person
+
+    @SerializedName("gender")
+    private String mGender; // Sex of social person
+
+    @SerializedName("birthday")
+    private String mBirthday; // birthday of social person in the format MM/DD/YYYY
+
+    @SerializedName("verified")
+    private String isVerified; // Check if user is verified
 
     private FacebookPerson(Parcel in) {
+        mId = in.readString();
+        mName = in.readString();
+        mProfileURL = in.readString();
+        mEmail = in.readString();
         mFirstName = in.readString();
+        mMiddleName = in.readString();
         mLastName = in.readString();
         mGender = in.readString();
         mBirthday = in.readString();
-        mCity = in.readString();
-        mVerified = in.readString();
+        isVerified = in.readString();
     }
 
     @Override
@@ -55,38 +70,16 @@ public class FacebookPerson extends SocialPerson implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mId);
+        dest.writeString(mName);
+        dest.writeString(mProfileURL);
+        dest.writeString(mEmail);
         dest.writeString(mFirstName);
+        dest.writeString(mMiddleName);
         dest.writeString(mLastName);
         dest.writeString(mGender);
         dest.writeString(mBirthday);
-        dest.writeString(mCity);
-        dest.writeString(mVerified);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || !(o instanceof FacebookPerson)) return false;
-
-        FacebookPerson that = (FacebookPerson) o;
-
-        return !(mFirstName != null ? !mFirstName.equals(that.mFirstName) : that.mFirstName != null) &&
-                !(mLastName != null ? !mLastName.equals(that.mLastName) : that.mLastName != null) &&
-                !(mGender != null ? !mGender.equals(that.mGender) : that.mGender != null) &&
-                !(mBirthday != null ? !mBirthday.equals(that.mBirthday) : that.mBirthday != null) &&
-                !(mCity != null ? !mCity.equals(that.mCity) : that.mCity != null) &&
-                !(mVerified != null ? !mVerified.equals(that.mVerified) : that.mVerified != null);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = mFirstName != null ? mFirstName.hashCode() : 0;
-        result = 31 * result + (mLastName != null ? mLastName.hashCode() : 0);
-        result = 31 * result + (mGender != null ? mGender.hashCode() : 0);
-        result = 31 * result + (mBirthday != null ? mBirthday.hashCode() : 0);
-        result = 31 * result + (mCity != null ? mCity.hashCode() : 0);
-        result = 31 * result + (mVerified != null ? mVerified.hashCode() : 0);
-        return result;
+        dest.writeString(isVerified);
     }
 
     @Override
@@ -94,7 +87,7 @@ public class FacebookPerson extends SocialPerson implements Parcelable {
         return "FacebookPerson{" +
                 "id='" + mId + '\'' +
                 ", name='" + mName + '\'' +
-                ", avatarURL='" + mAvatarURL + '\'' +
+                ", avatarURL='" + getAvatarURL() + '\'' +
                 ", profileURL='" + mProfileURL + '\'' +
                 ", email='" + mEmail + '\'' +
                 ", firstName='" + mFirstName + '\'' +
@@ -102,57 +95,56 @@ public class FacebookPerson extends SocialPerson implements Parcelable {
                 ", lastName='" + mLastName + '\'' +
                 ", gender='" + mGender + '\'' +
                 ", birthday='" + mBirthday + '\'' +
-                ", city='" + mCity + '\'' +
-                ", verified='" + mVerified + '\'' +
+                ", verified='" + isVerified + '\'' +
                 '}';
     }
 
-    public void setFirstName(String firstName) {
-        mFirstName = firstName;
+    @Override
+    public String getId() {
+        return mId;
     }
+
+    @Override
+    public String getName() {
+        return mName;
+    }
+
+    @Override
+    public String getProfileURL() {
+        return mProfileURL;
+    }
+
+    @Override
+    public String getAvatarURL() {
+        return "http://graph.facebook.com/" + mId + "/picture?type=large";
+    }
+
+    @Override
+    public String getEmail() {
+        return mEmail;
+    }
+
     public String getFirstName() {
         return mFirstName;
     }
 
-    public void setMiddleName(String middleName) {
-        mMiddleName = middleName;
-    }
     public String getMiddleName() {
         return mMiddleName;
     }
 
-    public void setLastName(String lastName) {
-        mLastName = lastName;
-    }
     public String getLastName() {
         return mLastName;
     }
 
-    public void setGender(String gender) {
-        mGender = gender;
-    }
     public String getGender() {
         return mGender;
     }
 
-    public void setBirthday(String birthday) {
-        mBirthday = birthday;
-    }
     public String getBirthday() {
         return mBirthday;
     }
 
-    public void setCity(String city) {
-        mCity = city;
-    }
-    public String getCity() {
-        return mCity;
-    }
-
-    public void setVerified(String verified) {
-        mVerified = verified;
-    }
-    public String getVerified() {
-        return mVerified;
+    public String isVerified() {
+        return isVerified;
     }
 }
