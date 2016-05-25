@@ -15,10 +15,11 @@ import com.facebook.internal.Utility;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.snl.core.SocialNetwork;
-import com.snl.core.SocialPerson;
+import com.snl.core.SocialNetworkException;
 import com.snl.core.listener.OnLoginCompleteListener;
 import com.snl.core.listener.OnRequestDetailedSocialPersonCompleteListener;
 import com.snl.core.listener.OnRequestSocialPersonCompleteListener;
+import com.snl.core.listener.OnRequestSocialPersonsCompleteListener;
 
 import org.json.JSONObject;
 
@@ -26,10 +27,9 @@ import java.util.List;
 
 /**
  * Created by Viнt@rь on 28.11.2015
- * // TODO разобраться почему не пашет Profile.getCurrentProfile
  */
 public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
-    public static final int ID = 4;
+    public static final int ID = 1;
 
     private LoginManager mLoginManager;
     private CallbackManager mCallbackManager;
@@ -82,28 +82,31 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     @Override
-    public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
-        super.requestLogin(onLoginCompleteListener);
+    public void requestLogin(final OnLoginCompleteListener listener) {
+        super.requestLogin(listener);
 
         mLoginManager.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                if (mLocalListeners.get(REQUEST_LOGIN) != null) {
-                    ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getId());
-                    mLocalListeners.remove(REQUEST_LOGIN);
+                if (isRegistered(listener)) {
+                    listener.onLoginSuccess(getId());
+                    cancelLoginRequest();
                 }
             }
 
             @Override
             public void onCancel() {
-
+                if (isRegistered(listener)) {
+                    listener.onError(getId(), Request.LOGIN, null, null);
+                    cancelLoginRequest();
+                }
             }
 
             @Override
             public void onError(FacebookException error) {
-                if (mLocalListeners.get(REQUEST_LOGIN) != null) {
-                    mLocalListeners.get(REQUEST_LOGIN).onError(getId(), REQUEST_LOGIN, error.getMessage(), null);
-                    mLocalListeners.remove(REQUEST_LOGIN);
+                if (isRegistered(listener)) {
+                    listener.onError(getId(), Request.LOGIN, error.getMessage(), null);
+                    cancelLoginRequest();
                 }
             }
         });
@@ -111,34 +114,29 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     @Override
-    public void requestCurrentPerson(OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
-        super.requestCurrentPerson(onRequestSocialPersonCompleteListener);
+    public void requestCurrentPerson(final OnRequestSocialPersonCompleteListener listener) {
+        super.requestCurrentPerson(listener);
 
         if (!isConnected()) {
-            if (mLocalListeners.get(REQUEST_GET_CURRENT_PERSON) != null) {
-                mLocalListeners.get(REQUEST_GET_CURRENT_PERSON).onError(getId(), REQUEST_GET_PERSON, "Please login first", null);
+            if (isRegistered(listener)) {
+                listener.onError(getId(), Request.PERSON, "Please login first", null);
+                cancelGetCurrentPersonRequest();
             }
             return;
         }
 
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id, name, link, email");
-
         GraphRequest request = GraphRequest.newMeRequest(getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
-                if (response.getError() != null) {
-                    if (mLocalListeners.get(REQUEST_GET_CURRENT_PERSON) != null) {
-                        mLocalListeners.get(REQUEST_GET_CURRENT_PERSON).onError(getId(), REQUEST_GET_CURRENT_PERSON, response.getError().getErrorMessage(), null);
+                if (isRegistered(listener)) {
+                    if (response.getError() == null) {
+                        listener.onRequestSocialPersonSuccess(getId(), parsePerson(object));
+                    } else {
+                        listener.onError(getId(), Request.PERSON, response.getError().getErrorMessage(), null);
                     }
-                    return;
-                }
-
-                if (mLocalListeners.get(REQUEST_GET_CURRENT_PERSON) != null) {
-                    SocialPerson person = parsePerson(object);
-
-                    ((OnRequestSocialPersonCompleteListener) mLocalListeners.get(REQUEST_GET_CURRENT_PERSON))
-                            .onRequestSocialPersonSuccess(getId(), person);
+                    cancelGetCurrentPersonRequest();
                 }
             }
         });
@@ -148,39 +146,67 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
-        super.requestDetailedSocialPerson(userId, onRequestDetailedSocialPersonCompleteListener);
+    public void requestDetailedCurrentPerson(final OnRequestDetailedSocialPersonCompleteListener listener) {
+        super.requestDetailedCurrentPerson(listener);
 
         if (!isConnected()) {
-            if (mLocalListeners.get(REQUEST_GET_DETAIL_PERSON) != null) {
-                mLocalListeners.get(REQUEST_GET_DETAIL_PERSON).onError(getId(), REQUEST_GET_DETAIL_PERSON, "Please login first", null);
+            if (isRegistered(listener)) {
+                listener.onError(getId(), Request.DETAIL_PERSON, "Please login first", null);
+                cancelGetDetailedCurrentPersonRequest();
             }
             return;
         }
 
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id, name, first_name, middle_name, last_name, link, email, gender, birthday, verified");
-
         GraphRequest request = GraphRequest.newMeRequest(getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
-                if (response.getError() != null) {
-                    if (mLocalListeners.get(REQUEST_GET_DETAIL_PERSON) != null) {
-                        mLocalListeners.get(REQUEST_GET_DETAIL_PERSON).onError(getId(), REQUEST_GET_DETAIL_PERSON, response.getError().getErrorMessage(), null);
+                if (isRegistered(listener)) {
+                    if (response.getError() == null) {
+                        listener.onRequestDetailedSocialPersonSuccess(getId(), parsePerson(object));
+                    } else {
+                        listener.onError(getId(), Request.DETAIL_PERSON, response.getError().getErrorMessage(), null);
                     }
-                    return;
-                }
-
-                if (mLocalListeners.get(REQUEST_GET_DETAIL_PERSON) != null) {
-                    FacebookPerson person = parsePerson(object);
-
-                    ((OnRequestDetailedSocialPersonCompleteListener) mLocalListeners.get(REQUEST_GET_DETAIL_PERSON))
-                        .onRequestDetailedSocialPersonSuccess(getId(), person);
+                    cancelGetDetailedCurrentPersonRequest();
                 }
             }
         });
         request.setParameters(parameters);
         request.executeAsync();
+    }
+
+    /**
+     * Not supported via Facebook sdk.
+     * @throws SocialNetworkException
+     * @param userId user id in social network
+     * @param listener listener for request {@link com.snl.core.SocialPerson}
+     */
+    @Override
+    public void requestSocialPerson(String userId, OnRequestSocialPersonCompleteListener listener) {
+        throw new SocialNetworkException("requestSocialPerson isn't allowed for FacebookSocialNetwork");
+    }
+
+    /**
+     * Not supported via Facebook sdk.
+     * @throws SocialNetworkException
+     * @param userId array of user ids in social network
+     * @param listener listener for request ArrayList of {@link com.snl.core.SocialPerson}
+     */
+    @Override
+    public void requestSocialPersons(String[] userId, OnRequestSocialPersonsCompleteListener listener) {
+        throw new SocialNetworkException("requestSocialPersons isn't allowed for FacebookSocialNetwork");
+    }
+
+    /**
+     * Not supported via Facebook sdk.
+     * @throws SocialNetworkException
+     * @param userId user id in social network
+     * @param listener listener for request {@link FacebookPerson}
+     */
+    @Override
+    public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener listener) {
+        throw new SocialNetworkException("requestDetailedSocialPerson isn't allowed for FacebookSocialNetwork");
     }
 
     private static FacebookPerson parsePerson(JSONObject person) {
