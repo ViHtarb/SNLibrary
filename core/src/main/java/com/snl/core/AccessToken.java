@@ -2,6 +2,7 @@ package com.snl.core;
 
 /**
  * Created by Viнt@rь on 28.11.2015
+ * Universal access token wrapper
  */
 public class AccessToken {
     //*** Access token string for social network*/

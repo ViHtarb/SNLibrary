@@ -3,6 +3,7 @@ package com.snl.vk;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import com.snl.core.SocialNetwork;
 import com.snl.core.listener.OnLoginCompleteListener;
@@ -17,22 +18,25 @@ import java.util.List;
  * Created by Viнt@rь on 13.04.2016
  */
 public class VKSocialNetwork extends SocialNetwork<VKAccessToken> {
-    public static final int ID = 5;
+    public static final int ID = 2;
 
     private List<String> mPermissions;
 
     private final VKCallback<VKAccessToken> mLoginCallback = new VKCallback<VKAccessToken>() {
         @Override
         public void onResult(VKAccessToken res) {
-            if (mLocalListeners.get(REQUEST_LOGIN) != null) {
-                ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getId());
-                mLocalListeners.remove(REQUEST_LOGIN);
+            if (isRegistered(Request.LOGIN)) {
+                ((OnLoginCompleteListener) getListener(Request.LOGIN)).onLoginSuccess(getId());
+                cancelLoginRequest();
             }
         }
 
         @Override
         public void onError(VKError error) {
-            mLocalListeners.get(REQUEST_LOGIN).onError(getId(), REQUEST_LOGIN, error.toString(), null);
+            if (isRegistered(Request.LOGIN)) {
+                getListener(Request.LOGIN).onError(getId(), Request.LOGIN, error.toString(), null);
+                cancelLoginRequest();
+            }
         }
     };
 
@@ -74,7 +78,7 @@ public class VKSocialNetwork extends SocialNetwork<VKAccessToken> {
     }
 
     @Override
-    public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
+    public void requestLogin(@NonNull OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
         VKSdk.login(getContext(), mPermissions.toArray(new String[mPermissions.size()]));
     }

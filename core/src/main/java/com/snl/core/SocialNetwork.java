@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.snl.core.listener.OnCheckIsFriendCompleteListener;
@@ -32,36 +31,24 @@ import java.util.Map;
  */
 public abstract class SocialNetwork<T> implements Application.ActivityLifecycleCallbacks {
 
-    /*** Used to check is login request in progress*/
-    public static final String REQUEST_LOGIN = "SocialNetwork.REQUEST_LOGIN";
-    /*** Used to check is login request in progress for social networks with OAuth*/
-    public static final String REQUEST_LOGIN2 = "SocialNetwork.REQUEST_LOGIN2";
-    /*** Used to check is access token request in progress*/
-    public static final String REQUEST_ACCESS_TOKEN = "SocialNetwork.REQUEST_ACCESS_TOKEN";
-    /*** Used to check is get detailed person request in progress*/
-    public static final String REQUEST_GET_DETAIL_PERSON = "SocialNetwork.REQUEST_GET_DETAIL_PERSON";
-    /*** Used to check is get person request in progress*/
-    public static final String REQUEST_GET_PERSON = "SocialNetwork.REQUEST_GET_PERSON";
-    /*** Used to check is get persons request in progress*/
-    public static final String REQUEST_GET_PERSONS = "SocialNetwork.REQUEST_GET_PERSONS";
-    /*** Used to check is get current person request in progress*/
-    public static final String REQUEST_GET_CURRENT_PERSON = "SocialNetwork.REQUEST_GET_CURRENT_PERSON";
-    /*** Used to check is post message request in progress*/
-    public static final String REQUEST_POST_MESSAGE = "SocialNetwork.REQUEST_POST_MESSAGE";
-    /*** Used to check is post photo request in progress*/
-    public static final String REQUEST_POST_PHOTO = "SocialNetwork.REQUEST_POST_PHOTO";
-    /*** Used to check is post link request in progress*/
-    public static final String REQUEST_POST_LINK = "SocialNetwork.REQUEST_POST_LINK";
-    /*** Used to check is post dialog request in progress*/
-    public static final String REQUEST_POST_DIALOG = "SocialNetwork.REQUEST_POST_DIALOG";
-    /*** Used to check is checking friend request in progress*/
-    public static final String REQUEST_CHECK_IS_FRIEND = "SocialNetwork.REQUEST_CHECK_IS_FRIEND";
-    /*** Used to check is get friends list request in progress*/
-    public static final String REQUEST_GET_FRIENDS = "SocialNetwork.REQUEST_GET_FRIENDS";
-    /*** Used to check is add friend request in progress*/
-    public static final String REQUEST_ADD_FRIEND = "SocialNetwork.REQUEST_ADD_FRIEND";
-    /*** Used to check is remove friend request in progress*/
-    public static final String REQUEST_REMOVE_FRIEND = "SocialNetwork.REQUEST_REMOVE_FRIEND";
+    public enum Request {
+        LOGIN,
+        LOGIN2,
+        ACCESS_TOKEN,
+        PERSON,
+        DETAIL_PERSON,
+        SOCIAL_PERSON,
+        DETAIL_SOCIAL_PERSON,
+        SOCIAL_PERSONS,
+        POST_MESSAGE,
+        POST_PHOTO,
+        POST_LINK,
+        POST_DIALOG,
+        CHECK_IS_FRIEND,
+        FRIENDS,
+        ADD_FRIEND,
+        REMOVE_FRIEND
+    }
 
     /*** Share bundle constant for message*/
     public static final String BUNDLE_MESSAGE = "message";
@@ -80,8 +67,8 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     protected static final Gson GSON = new Gson();
 
-    protected Map<String, SocialNetworkListener> mGlobalListeners = new HashMap<>();
-    protected Map<String, SocialNetworkListener> mLocalListeners = new HashMap<>();
+    protected Map<Request, SocialNetworkListener> mGlobalListeners = new HashMap<>();
+    protected Map<Request, SocialNetworkListener> mLocalListeners = new HashMap<>();
 
     private Context mContext;
 
@@ -107,7 +94,6 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
     @Override
     @CallSuper
     public void onActivityResumed(Activity activity) {
-        Log.d("TEST", "onActivityResumed");
         mContext = activity;
     }
 
@@ -143,13 +129,8 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
     /**
      * Get id of social network
      * @return Social network ids:<br>
-     * 1 - Twitter<br>
-     * 2 - LinkedIn<br>
-     * 3 - Google Plus<br>
-     * 4 - Facebook<br>
-     * 5 - Vkontakte<br>
-     * 6 - Odnoklassniki<br>
-     * 7 - Instagram<br>
+     * 1 - FB<br>
+     * 2 - VK<br>
      */
     public abstract int getId();
 
@@ -180,14 +161,15 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Login to social network using local listener
-     * @param onLoginCompleteListener listener for login complete
+     * @param listener listener for login complete
      */
-    public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
+    @CallSuper
+    public void requestLogin(OnLoginCompleteListener listener) {
         if (isConnected()) {
-            throw new SocialNetworkException("Already connected, please check isConnected() method");
+            throw new SocialNetworkException("Already connected, check isConnected() method first");
         }
 
-        registerListener(REQUEST_LOGIN, onLoginCompleteListener);
+        registerListener(Request.LOGIN, listener);
     }
 
     /**
@@ -199,10 +181,10 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Get {@link AccessToken} using local listener
-     * @param onRequestAccessTokenCompleteListener listener for request {@link AccessToken} complete
+     * @param listener listener for request {@link AccessToken} complete
      */
-    public void requestAccessToken(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
-        registerListener(REQUEST_ACCESS_TOKEN, onRequestAccessTokenCompleteListener);
+    public void requestAccessToken(OnRequestAccessTokenCompleteListener listener) {
+        registerListener(Request.ACCESS_TOKEN, listener);
     }
 
     /**
@@ -214,61 +196,10 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Get {@link SocialPerson} of current user using local listener
-     * @param onRequestSocialPersonCompleteListener listener for request {@link SocialPerson}
+     * @param listener listener for request {@link SocialPerson}
      */
-    public void requestCurrentPerson(OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
-        registerListener(REQUEST_GET_CURRENT_PERSON, onRequestSocialPersonCompleteListener);
-    }
-
-    /**
-     * Get {@link SocialPerson} by user id using global listener
-     * @param userID user id in social network
-     */
-    public void requestSocialPerson(String userID) {
-        requestSocialPerson(userID, null);
-    }
-
-    /**
-     * Get {@link SocialPerson} by user id using local listener
-     * @param userID user id in social network
-     * @param onRequestSocialPersonCompleteListener listener for request {@link SocialPerson}
-     */
-    public void requestSocialPerson(String userID, OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
-        registerListener(REQUEST_GET_PERSON, onRequestSocialPersonCompleteListener);
-    }
-
-    /**
-     * Get arraylist of {@link SocialPerson} by array of user ids using global listener
-     * @param userID array of user ids in social network
-     */
-    public void requestSocialPersons(String[] userID) {
-        requestSocialPersons(userID, null);
-    }
-
-    /**
-     * Get arraylist of {@link SocialPerson} by array of user ids using local listener
-     * @param userID array of user ids in social network
-     * @param onRequestSocialPersonsCompleteListener listener for request ArrayList of {@link SocialPerson}
-     */
-    public void requestSocialPersons(String[] userID, OnRequestSocialPersonsCompleteListener onRequestSocialPersonsCompleteListener) {
-        registerListener(REQUEST_GET_PERSONS, onRequestSocialPersonsCompleteListener);
-    }
-
-    /**
-     * Get detailed profile for user by id using global listener. Look for detailed persons in social networks packages.
-     * @param userID user id in social network
-     */
-    public void requestDetailedSocialPerson(String userID) {
-        requestDetailedSocialPerson(userID, null);
-    }
-
-    /**
-     * Get detailed profile for user by id using local listener. Look for detailed persons in social networks packages.
-     * @param userID user id in social network
-     * @param onRequestDetailedSocialPersonCompleteListener listener for request detailed social person
-     */
-    public void requestDetailedSocialPerson(String userID, OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
-        registerListener(REQUEST_GET_DETAIL_PERSON, onRequestDetailedSocialPersonCompleteListener);
+    public void requestCurrentPerson(OnRequestSocialPersonCompleteListener listener) {
+        registerListener(Request.PERSON, listener);
     }
 
     /**
@@ -280,10 +211,126 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Get detailed profile for current user using global listener. Look for detailed persons in social networks packages.
-     * @param onRequestDetailedSocialPersonCompleteListener listener for request detailed social person
+     * @param listener listener for request detailed social person
      */
-    public void requestDetailedCurrentPerson(OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
-        requestDetailedSocialPerson(null, onRequestDetailedSocialPersonCompleteListener);
+    public void requestDetailedCurrentPerson(OnRequestDetailedSocialPersonCompleteListener listener) {
+        registerListener(Request.DETAIL_PERSON, listener);
+    }
+
+    /**
+     * Get {@link SocialPerson} by user id using global listener
+     * @param userId user id in social network
+     */
+    public void requestSocialPerson(String userId) {
+        requestSocialPerson(userId, null);
+    }
+
+    /**
+     * Get {@link SocialPerson} by user id using local listener
+     * @param userId user id in social network
+     * @param listener listener for request {@link SocialPerson}
+     */
+    public void requestSocialPerson(String userId, OnRequestSocialPersonCompleteListener listener) {
+        registerListener(Request.SOCIAL_PERSON, listener);
+    }
+
+    /**
+     * Get array list of {@link SocialPerson} by array of user ids using global listener
+     * @param userId array of user ids in social network
+     */
+    public void requestSocialPersons(String[] userId) {
+        requestSocialPersons(userId, null);
+    }
+
+    /**
+     * Get array list of {@link SocialPerson} by array of user ids using local listener
+     * @param userId array of user ids in social network
+     * @param listener listener for request ArrayList of {@link SocialPerson}
+     */
+    public void requestSocialPersons(String[] userId, OnRequestSocialPersonsCompleteListener listener) {
+        registerListener(Request.SOCIAL_PERSONS, listener);
+    }
+
+    /**
+     * Get detailed profile for user by id using global listener. Look for detailed persons in social networks packages.
+     * @param userId user id in social network
+     */
+    public void requestDetailedSocialPerson(String userId) {
+        requestDetailedSocialPerson(userId, null);
+    }
+
+    /**
+     * Get detailed profile for user by id using local listener. Look for detailed persons in social networks packages.
+     * @param userId user id in social network
+     * @param listener listener for request detailed social person
+     */
+    public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener listener) {
+        registerListener(Request.DETAIL_SOCIAL_PERSON, listener);
+    }
+
+    /**
+     * Check if user by id is friend of current user using global listener
+     * @param userId user id that should be checked as friend of current user
+     */
+    public void requestCheckIsFriend(String userId) {
+        requestCheckIsFriend(userId, null);
+    }
+
+    /**
+     * Check if user by id is friend of current user using local listener
+     * @param userId user id that should be checked as friend of current user
+     * @param listener listener for checking friend request
+     */
+    public void requestCheckIsFriend(String userId, OnCheckIsFriendCompleteListener listener) {
+        registerListener(Request.CHECK_IS_FRIEND, listener);
+    }
+    /**
+     * Get current user friends list using global listener
+     */
+    public void requestGetFriends() {
+        requestGetFriends(null);
+    }
+
+    /**
+     * Get current user friends list using local listener
+     * @param listener listener for getting list of current user friends
+     */
+    public void requestGetFriends(OnRequestGetFriendsCompleteListener listener) {
+        registerListener(Request.FRIENDS, listener);
+    }
+
+    /**
+     * Invite friend by id to current user using global listener
+     * @param userId id of user that should be invited
+     */
+    public void requestAddFriend(String userId) {
+        requestAddFriend(userId, null);
+    }
+
+    /**
+     * Invite friend by id to current user using local listener
+     * @param userId id of user that should be invited
+     * @param listener listener for invite result
+     */
+    public void requestAddFriend(String userId, OnRequestAddFriendCompleteListener listener) {
+        registerListener(Request.ADD_FRIEND, listener);
+    }
+
+    /**
+     * Remove friend by id from current user friends using global listener
+     * @param userId user id that should be removed from friends
+     */
+    public void requestRemoveFriend(String userId) {
+        requestRemoveFriend(userId, null);
+    }
+
+    /**
+     * Remove friend by id from current user friends using local listener
+     * @param userId user id that should be removed from friends
+     * @param listener listener to remove friend request response
+     */
+    public void requestRemoveFriend(String userId, OnRequestRemoveFriendCompleteListener listener) {
+        registerListener(Request.REMOVE_FRIEND, listener);
     }
 
     /**
@@ -297,10 +344,10 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
     /**
      * Post message to social network using local listener
      * @param message  message that should be shared
-     * @param onPostingCompleteListener listener for posting request
+     * @param listener listener for posting request
      */
-    public void requestPostMessage(String message, OnPostingCompleteListener onPostingCompleteListener) {
-        registerListener(REQUEST_POST_MESSAGE, onPostingCompleteListener);
+    public void requestPostMessage(String message, OnPostingCompleteListener listener) {
+        registerListener(Request.POST_MESSAGE, listener);
     }
 
     /**
@@ -316,10 +363,10 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
      * Post photo to social network using local listener
      * @param photo photo that should be shared
      * @param message message that should be shared with photo
-     * @param onPostingCompleteListener listener for posting request
+     * @param listener listener for posting request
      */
-    public void requestPostPhoto(File photo, String message, OnPostingCompleteListener onPostingCompleteListener) {
-        registerListener(REQUEST_POST_PHOTO, onPostingCompleteListener);
+    public void requestPostPhoto(File photo, String message, OnPostingCompleteListener listener) {
+        registerListener(Request.POST_PHOTO, listener);
     }
 
     /**
@@ -333,10 +380,10 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
     /**
      * Get Share dialog of social network using global listener
      * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
-     * @param onPostingCompleteListener listener for posting request
+     * @param listener listener for posting request
      */
-    public void requestPostDialog(Bundle bundle, OnPostingCompleteListener onPostingCompleteListener) {
-        registerListener(REQUEST_POST_DIALOG, onPostingCompleteListener);
+    public void requestPostDialog(Bundle bundle, OnPostingCompleteListener listener) {
+        registerListener(Request.POST_DIALOG, listener);
     }
 
     /**
@@ -352,199 +399,119 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
      * Post link with comment to social network using local listener
      * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
      * @param message message that should be shared with bundle
-     * @param onPostingCompleteListener listener for posting request
+     * @param listener listener for posting request
      */
-    public void requestPostLink(Bundle bundle, String message, OnPostingCompleteListener onPostingCompleteListener) {
-        registerListener(REQUEST_POST_LINK, onPostingCompleteListener);
-    }
-
-    /**
-     * Check if user by id is friend of current user using global listener
-     * @param userID user id that should be checked as friend of current user
-     */
-    public void requestCheckIsFriend(String userID) {
-        requestCheckIsFriend(userID, null);
-    }
-
-    /**
-     * Check if user by id is friend of current user using local listener
-     * @param userID user id that should be checked as friend of current user
-     * @param onCheckIsFriendCompleteListener listener for checking friend request
-     */
-    public void requestCheckIsFriend(String userID, OnCheckIsFriendCompleteListener onCheckIsFriendCompleteListener) {
-        registerListener(REQUEST_CHECK_IS_FRIEND, onCheckIsFriendCompleteListener);
-    }
-    /**
-     * Get current user friends list using global listener
-     */
-    public void requestGetFriends() {
-        requestGetFriends(null);
-    }
-
-    /**
-     * Get current user friends list using local listener
-     * @param onRequestGetFriendsCompleteListener listener for getting list of current user friends
-     */
-    public void requestGetFriends(OnRequestGetFriendsCompleteListener onRequestGetFriendsCompleteListener) {
-        registerListener(REQUEST_GET_FRIENDS, onRequestGetFriendsCompleteListener);
-    }
-
-    /**
-     * Invite friend by id to current user using global listener
-     * @param userID id of user that should be invited
-     */
-    public void requestAddFriend(String userID) {
-        requestAddFriend(userID, null);
-    }
-
-    /**
-     * Invite friend by id to current user using local listener
-     * @param userID id of user that should be invited
-     * @param onRequestAddFriendCompleteListener listener for invite result
-     */
-    public void requestAddFriend(String userID, OnRequestAddFriendCompleteListener onRequestAddFriendCompleteListener) {
-        registerListener(REQUEST_ADD_FRIEND, onRequestAddFriendCompleteListener);
-    }
-
-    /**
-     * Remove friend by id from current user friends using global listener
-     * @param userID user id that should be removed from friends
-     */
-    public void requestRemoveFriend(String userID) {
-        requestRemoveFriend(userID, null);
-    }
-
-    /**
-     * Remove friend by id from current user friends using local listener
-     * @param userID user id that should be removed from friends
-     * @param onRequestRemoveFriendCompleteListener listener to remove friend request response
-     */
-    public void requestRemoveFriend(String userID, OnRequestRemoveFriendCompleteListener onRequestRemoveFriendCompleteListener) {
-        registerListener(REQUEST_REMOVE_FRIEND, onRequestRemoveFriendCompleteListener);
+    public void requestPostLink(Bundle bundle, String message, OnPostingCompleteListener listener) {
+        registerListener(Request.POST_LINK, listener);
     }
 
     /**
      * Cancel login request
      */
     public void cancelLoginRequest() {
-        mLocalListeners.remove(REQUEST_LOGIN);
+        mLocalListeners.remove(Request.LOGIN);
     }
 
     /**
      * Cancel {@link AccessToken} request
      */
     public void cancelAccessTokenRequest() {
-        mLocalListeners.remove(REQUEST_ACCESS_TOKEN);
+        mLocalListeners.remove(Request.ACCESS_TOKEN);
     }
 
     /**
      * Cancel current user {@link SocialPerson} request
      */
     public void cancelGetCurrentPersonRequest() {
-        mLocalListeners.remove(REQUEST_GET_CURRENT_PERSON);
+        mLocalListeners.remove(Request.PERSON);
+    }
+
+    public void cancelGetDetailedCurrentPersonRequest() {
+        mLocalListeners.remove(Request.DETAIL_PERSON);
     }
 
     /**
      * Cancel user by id {@link SocialPerson} request
      */
     public void cancelGetSocialPersonRequest() {
-        mLocalListeners.remove(REQUEST_GET_PERSON);
+        mLocalListeners.remove(Request.SOCIAL_PERSON);
     }
 
     /**
      * Cancel users by array of ids request
      */
     public void cancelGetSocialPersonsRequest() {
-        mLocalListeners.remove(REQUEST_GET_PERSONS);
+        mLocalListeners.remove(Request.SOCIAL_PERSONS);
     }
 
     /**
      * Cancel detailed user request
      */
-    public void cancelGetDetailedSocialRequest() {
-        mLocalListeners.remove(REQUEST_GET_DETAIL_PERSON);
-    }
-
-    /**
-     * Cancel post message request
-     */
-    public void cancelPostMessageRequest() {
-        mLocalListeners.remove(REQUEST_POST_MESSAGE);
-    }
-
-    /**
-     * Cancel post photo request
-     */
-    public void cancelPostPhotoRequest() {
-        mLocalListeners.remove(REQUEST_POST_PHOTO);
-    }
-
-    /**
-     * Cancel post link request
-     */
-    public void cancelPostLinkRequest() {
-        mLocalListeners.remove(REQUEST_POST_LINK);
-    }
-
-    /**
-     * Cancel share dialog request
-     */
-    public void cancelPostDialogRequest() {
-        mLocalListeners.remove(REQUEST_POST_DIALOG);
+    public void cancelGetDetailedSocialPersonRequest() {
+        mLocalListeners.remove(Request.DETAIL_SOCIAL_PERSON);
     }
 
     /**
      * Cancel check friend request
      */
     public void cancelCheckIsFriendRequest() {
-        mLocalListeners.remove(REQUEST_CHECK_IS_FRIEND);
+        mLocalListeners.remove(Request.CHECK_IS_FRIEND);
     }
 
     /**
      * Cancel friends list request
      */
     public void cancelGetFriendsRequest() {
-        mLocalListeners.remove(REQUEST_GET_FRIENDS);
+        mLocalListeners.remove(Request.FRIENDS);
     }
 
     /**
      * Cancel add friend request
      */
     public void cancelAddFriendRequest() {
-        mLocalListeners.remove(REQUEST_ADD_FRIEND);
+        mLocalListeners.remove(Request.ADD_FRIEND);
     }
 
     /**
      * Cancel remove friend request
      */
     public void cancelRemoveFriendRequest() {
-        mLocalListeners.remove(REQUEST_REMOVE_FRIEND);
+        mLocalListeners.remove(Request.REMOVE_FRIEND);
+    }
+
+    /**
+     * Cancel post message request
+     */
+    public void cancelPostMessageRequest() {
+        mLocalListeners.remove(Request.POST_MESSAGE);
+    }
+
+    /**
+     * Cancel post photo request
+     */
+    public void cancelPostPhotoRequest() {
+        mLocalListeners.remove(Request.POST_PHOTO);
+    }
+
+    /**
+     * Cancel post link request
+     */
+    public void cancelPostLinkRequest() {
+        mLocalListeners.remove(Request.POST_LINK);
+    }
+
+    /**
+     * Cancel share dialog request
+     */
+    public void cancelPostDialogRequest() {
+        mLocalListeners.remove(Request.POST_DIALOG);
     }
 
     /**
      * Cancel all requests
      */
     public void cancelAll() {
-        Log.d("SocialNetwork", this + ":SocialNetwork.cancelAll()");
-
-        // we need to call all, because in implementations we can possible do aditional work in specific methods
-        cancelLoginRequest();
-        cancelAccessTokenRequest();
-        cancelGetCurrentPersonRequest();
-        cancelGetSocialPersonRequest();
-        cancelGetSocialPersonsRequest();
-        cancelGetDetailedSocialRequest();
-        cancelPostMessageRequest();
-        cancelPostPhotoRequest();
-        cancelPostLinkRequest();
-        cancelPostDialogRequest();
-        cancelGetFriendsRequest();
-        cancelCheckIsFriendRequest();
-        cancelAddFriendRequest();
-        cancelRemoveFriendRequest();
-
-        // remove all local listeners
-        mLocalListeners = new HashMap<>();
+        mLocalListeners.clear();
     }
 
     //////////////////// UTIL METHODS ////////////////////
@@ -554,124 +521,144 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
         }
     }
 
-    private void registerListener(String listenerID, SocialNetworkListener socialNetworkListener) {
-        if (socialNetworkListener != null) {
-            mLocalListeners.put(listenerID, socialNetworkListener);
+    protected boolean isRegistered(Request request) {
+        return mLocalListeners.get(request) != null;
+    }
+
+    protected boolean isRegistered(SocialNetworkListener listener) {
+        return mLocalListeners.containsValue(listener);
+    }
+
+    protected SocialNetworkListener getListener(Request request) {
+        return mLocalListeners.get(request);
+    }
+
+    private void registerListener(Request request, SocialNetworkListener listener) {
+        if (listener != null) {
+            mLocalListeners.put(request, listener);
         } else {
-            mLocalListeners.put(listenerID, mGlobalListeners.get(listenerID));
+            mLocalListeners.put(request, mGlobalListeners.get(request));
         }
     }
-    //////////////////// SETTERS FOR GLOBAL LISTENERS ////////////////////
 
+    //////////////////// SETTERS FOR GLOBAL LISTENERS ////////////////////
     /**
      * Register a callback to be invoked when login complete.
-     * @param onLoginCompleteListener the callback that will run
+     * @param listener the callback that will run
      */
-    public void setOnLoginCompleteListener(OnLoginCompleteListener onLoginCompleteListener) {
-        mGlobalListeners.put(REQUEST_LOGIN, onLoginCompleteListener);
+    public void setOnLoginCompleteListener(OnLoginCompleteListener listener) {
+        mGlobalListeners.put(Request.LOGIN, listener);
     }
 
     /**
      * Register a callback to be invoked when {@link AccessToken} request complete.
-     * @param onRequestAccessTokenCompleteListener the callback that will run
+     * @param listener the callback that will run
      */
-    public void setOnRequestAccessTokenCompleteListener(OnRequestAccessTokenCompleteListener onRequestAccessTokenCompleteListener) {
-        mGlobalListeners.put(REQUEST_ACCESS_TOKEN, onRequestAccessTokenCompleteListener);
+    public void setOnRequestAccessTokenCompleteListener(OnRequestAccessTokenCompleteListener listener) {
+        mGlobalListeners.put(Request.ACCESS_TOKEN, listener);
     }
 
     /**
      * Register a callback to be invoked when current {@link SocialPerson} request complete.
-     * @param onRequestCurrentPersonCompleteListener the callback that will run
+     * @param listener the callback that will run
      */
-    public void setOnRequestCurrentPersonCompleteListener(OnRequestSocialPersonCompleteListener onRequestCurrentPersonCompleteListener) {
-        mGlobalListeners.put(REQUEST_GET_CURRENT_PERSON, onRequestCurrentPersonCompleteListener);
+    public void setOnRequestCurrentPersonCompleteListener(OnRequestSocialPersonCompleteListener listener) {
+        mGlobalListeners.put(Request.PERSON, listener);
+    }
+
+    /**
+     * Register a callback to be invoked when detailed current person request complete. Look for detailed persons in social networks packages.
+     * @param listener the callback that will run
+     */
+    public void setOnRequestDetailedCurrentPersonCompleteListener(OnRequestDetailedSocialPersonCompleteListener listener) {
+        mGlobalListeners.put(Request.DETAIL_PERSON, listener);
     }
 
     /**
      * Register a callback to be invoked when {@link SocialPerson} by user id request complete.
-     * @param onRequestSocialPersonCompleteListener the callback that will run
+     * @param listener the callback that will run
      */
-    public void setOnRequestSocialPersonCompleteListener(OnRequestSocialPersonCompleteListener onRequestSocialPersonCompleteListener) {
-        mGlobalListeners.put(REQUEST_GET_PERSON, onRequestSocialPersonCompleteListener);
+    public void setOnRequestSocialPersonCompleteListener(OnRequestSocialPersonCompleteListener listener) {
+        mGlobalListeners.put(Request.SOCIAL_PERSON, listener);
     }
 
     /**
      * Register a callback to be invoked when detailed social person request complete. Look for detailed persons in social networks packages.
-     * @param onRequestDetailedSocialPersonCompleteListener the callback that will run
+     * @param listener the callback that will run
      */
-    public void setOnRequestDetailedSocialPersonCompleteListener(OnRequestDetailedSocialPersonCompleteListener onRequestDetailedSocialPersonCompleteListener) {
-        mGlobalListeners.put(REQUEST_GET_DETAIL_PERSON, onRequestDetailedSocialPersonCompleteListener);
+    public void setOnRequestDetailedSocialPersonCompleteListener(OnRequestDetailedSocialPersonCompleteListener listener) {
+        mGlobalListeners.put(Request.DETAIL_SOCIAL_PERSON, listener);
     }
 
     /**
      * Register a callback to be invoked when {@link SocialPerson}s by array of user ids request complete.
-     * @param onRequestSocialPersonsCompleteListener the callback that will run
+     * @param listener the callback that will run
      */
-    public void setOnRequestSocialPersonsCompleteListener(OnRequestSocialPersonsCompleteListener onRequestSocialPersonsCompleteListener) {
-        mGlobalListeners.put(REQUEST_GET_PERSONS, onRequestSocialPersonsCompleteListener);
+    public void setOnRequestSocialPersonsCompleteListener(OnRequestSocialPersonsCompleteListener listener) {
+        mGlobalListeners.put(Request.SOCIAL_PERSONS, listener);
     }
 
     /**
      * Register a callback to be invoked when check friend request complete.
-     * @param onCheckIsFriendListener the callback that will run
+     * @param listener the callback that will run
      */
-    public void setOnCheckIsFriendListener(OnCheckIsFriendCompleteListener onCheckIsFriendListener) {
-        mGlobalListeners.put(REQUEST_CHECK_IS_FRIEND, onCheckIsFriendListener);
+    public void setOnCheckIsFriendListener(OnCheckIsFriendCompleteListener listener) {
+        mGlobalListeners.put(Request.CHECK_IS_FRIEND, listener);
     }
 
     /**
      * Register a callback to be invoked when post message request complete.
-     * @param onPostingCompleteListener the callback that will run
+     * @param listener the callback that will run
      */
-    public void setOnPostingMessageCompleteListener(OnPostingCompleteListener onPostingCompleteListener) {
-        mGlobalListeners.put(REQUEST_POST_MESSAGE, onPostingCompleteListener);
-    }
-
-    /**
-     * Register a callback to be invoked when post photo request complete.
-     * @param onPostingCompleteListener the callback that will run
-     */
-    public void setOnPostingPhotoCompleteListener(OnPostingCompleteListener onPostingCompleteListener) {
-        mGlobalListeners.put(REQUEST_POST_PHOTO, onPostingCompleteListener);
-    }
-
-    /**
-     * Register a callback to be invoked when post link request complete.
-     * @param onPostingCompleteListener the callback that will run
-     */
-    public void setOnPostingLinkCompleteListener(OnPostingCompleteListener onPostingCompleteListener) {
-        mGlobalListeners.put(REQUEST_POST_LINK, onPostingCompleteListener);
-    }
-
-    /**
-     * Register a callback to be invoked when share dialog request complete.
-     * @param onPostingCompleteListener the callback that will run
-     */
-    public void setOnPostingDialogCompleteListener(OnPostingCompleteListener onPostingCompleteListener) {
-        mGlobalListeners.put(REQUEST_POST_DIALOG, onPostingCompleteListener);
+    public void setOnPostingMessageCompleteListener(OnPostingCompleteListener listener) {
+        mGlobalListeners.put(Request.POST_MESSAGE, listener);
     }
 
     /**
      * Register a callback to be invoked when get friends list request complete.
-     * @param onRequestGetFriendsCompleteListener the callback that will run
+     * @param listener the callback that will run
      */
-    public void setOnRequestGetFriendsCompleteListener(OnRequestGetFriendsCompleteListener onRequestGetFriendsCompleteListener) {
-        mGlobalListeners.put(REQUEST_GET_FRIENDS, onRequestGetFriendsCompleteListener);
+    public void setOnRequestGetFriendsCompleteListener(OnRequestGetFriendsCompleteListener listener) {
+        mGlobalListeners.put(Request.FRIENDS, listener);
     }
 
     /**
      * Register a callback to be invoked when invite friend request complete.
-     * @param onRequestAddFriendCompleteListener the callback that will run
+     * @param listener the callback that will run
      */
-    public void setOnRequestAddFriendCompleteListener(OnRequestAddFriendCompleteListener onRequestAddFriendCompleteListener) {
-        mGlobalListeners.put(REQUEST_ADD_FRIEND, onRequestAddFriendCompleteListener);
+    public void setOnRequestAddFriendCompleteListener(OnRequestAddFriendCompleteListener listener) {
+        mGlobalListeners.put(Request.ADD_FRIEND, listener);
     }
 
     /**
      * Register a callback to be invoked when remove friend request complete.
-     * @param onRequestRemoveFriendCompleteListener the callback that will run
+     * @param listener the callback that will run
      */
-    public void setOnRequestRemoveFriendCompleteListener(OnRequestRemoveFriendCompleteListener onRequestRemoveFriendCompleteListener) {
-        mGlobalListeners.put(REQUEST_REMOVE_FRIEND, onRequestRemoveFriendCompleteListener);
+    public void setOnRequestRemoveFriendCompleteListener(OnRequestRemoveFriendCompleteListener listener) {
+        mGlobalListeners.put(Request.REMOVE_FRIEND, listener);
+    }
+
+    /**
+     * Register a callback to be invoked when post photo request complete.
+     * @param listener the callback that will run
+     */
+    public void setOnPostingPhotoCompleteListener(OnPostingCompleteListener listener) {
+        mGlobalListeners.put(Request.POST_PHOTO, listener);
+    }
+
+    /**
+     * Register a callback to be invoked when post link request complete.
+     * @param listener the callback that will run
+     */
+    public void setOnPostingLinkCompleteListener(OnPostingCompleteListener listener) {
+        mGlobalListeners.put(Request.POST_LINK, listener);
+    }
+
+    /**
+     * Register a callback to be invoked when share dialog request complete.
+     * @param listener the callback that will run
+     */
+    public void setOnPostingDialogCompleteListener(OnPostingCompleteListener listener) {
+        mGlobalListeners.put(Request.POST_DIALOG, listener);
     }
 }

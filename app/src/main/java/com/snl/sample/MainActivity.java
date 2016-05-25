@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
+                        public void onError(int socialNetworkID, SocialNetwork.Request request, String errorMessage, Object data) {
 
                         }
                     });
@@ -65,14 +65,14 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
+                            public void onError(int socialNetworkID, SocialNetwork.Request request, String errorMessage, Object data) {
 
                             }
                         });
                     }
 
                     @Override
-                    public void onError(int socialNetworkID, String requestID, String errorMessage, Object data) {
+                    public void onError(int socialNetworkID, SocialNetwork.Request request, String errorMessage, Object data) {
                         Log.d("TEST", "onError" + " " + errorMessage);
                     }
                 });
