@@ -28,10 +28,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (!mSocialNetworkManager.isSocialNetworkExists(FacebookSocialNetwork.ID)) {
-            mSocialNetworkManager.addSocialNetwork(new FacebookSocialNetwork(this, FacebookPermissions.getPermissions()));
+            mSocialNetworkManager.addSocialNetwork(new FacebookSocialNetwork(getApplication(), FacebookPermissions.getPermissions()));
         }
 
         Button button = (Button) findViewById(R.id.fb_button);
+        assert button != null;
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

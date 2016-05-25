@@ -22,5 +22,5 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile project(':core')
-    compile ('com.facebook.android:facebook-android-sdk:4.11.0') { exclude module: 'support-v4' }
+    compile 'com.facebook.android:facebook-android-sdk:4.12.0'
 }

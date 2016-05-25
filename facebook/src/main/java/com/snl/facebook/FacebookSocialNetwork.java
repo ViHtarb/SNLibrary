@@ -1,6 +1,7 @@
 package com.snl.facebook;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -35,10 +36,10 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
 
     private List<String> mPermissions;
 
-    public FacebookSocialNetwork(Activity context, List<String> permissions) {
-        super(context);
+    public FacebookSocialNetwork(Application application, List<String> permissions) {
+        super(application);
 
-        String applicationId = Utility.getMetadataApplicationId(context.getApplicationContext());
+        String applicationId = Utility.getMetadataApplicationId(application);
 
         if (applicationId == null) {
             throw new IllegalStateException("applicationId can't be null\n" +
@@ -53,7 +54,6 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 

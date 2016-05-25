@@ -1,9 +1,12 @@
 package com.snl.core;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -27,7 +30,7 @@ import java.util.Map;
  * Created by Viнt@rь on 28.11.2015
  * {@link T} it`s a access token template
  */
-public abstract class SocialNetwork<T> {
+public abstract class SocialNetwork<T> implements Application.ActivityLifecycleCallbacks {
 
     /*** Used to check is login request in progress*/
     public static final String REQUEST_LOGIN = "SocialNetwork.REQUEST_LOGIN";
@@ -82,12 +85,50 @@ public abstract class SocialNetwork<T> {
 
     private Context mContext;
 
-    public SocialNetwork(Context context) {
-        mContext = context;
+    public SocialNetwork(Application application) {
+        mContext = application.getApplicationContext();
+        application.registerActivityLifecycleCallbacks(this);
     }
 
     public Context getContext() {
         return mContext;
+    }
+
+    @Override
+    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+
+    }
+
+    @Override
+    public void onActivityStarted(Activity activity) {
+
+    }
+
+    @Override
+    @CallSuper
+    public void onActivityResumed(Activity activity) {
+        Log.d("TEST", "onActivityResumed");
+        mContext = activity;
+    }
+
+    @Override
+    public void onActivityPaused(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityStopped(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+    }
+
+    @Override
+    public void onActivityDestroyed(Activity activity) {
+
     }
 
     /**
@@ -507,7 +548,6 @@ public abstract class SocialNetwork<T> {
     }
 
     //////////////////// UTIL METHODS ////////////////////
-
     protected void checkRequestState(AsyncTask request) throws SocialNetworkException {
         if (request != null) {
             throw new SocialNetworkException(request.toString() + "Request is already running");
@@ -521,7 +561,6 @@ public abstract class SocialNetwork<T> {
             mLocalListeners.put(listenerID, mGlobalListeners.get(listenerID));
         }
     }
-
     //////////////////// SETTERS FOR GLOBAL LISTENERS ////////////////////
 
     /**

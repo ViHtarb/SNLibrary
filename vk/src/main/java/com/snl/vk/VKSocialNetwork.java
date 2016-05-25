@@ -1,6 +1,7 @@
 package com.snl.vk;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 
@@ -36,10 +37,10 @@ public class VKSocialNetwork extends SocialNetwork<VKAccessToken> {
         }
     };
 
-    public VKSocialNetwork(Context context, List<String> permissions) {
-        super(context);
+    public VKSocialNetwork(Application application, List<String> permissions) {
+        super(application);
 
-        VKSdk.initialize(context.getApplicationContext());
+        VKSdk.initialize(application);
 
         mPermissions = permissions;
     }
