@@ -2,7 +2,6 @@ package com.snl.vk;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.content.Intent;
 
 import com.snl.core.SocialNetwork;
@@ -39,7 +38,6 @@ public class VKSocialNetwork extends SocialNetwork<VKAccessToken> {
 
     public VKSocialNetwork(Application application, List<String> permissions) {
         super(application);
-
         VKSdk.initialize(application);
 
         mPermissions = permissions;
@@ -47,7 +45,6 @@ public class VKSocialNetwork extends SocialNetwork<VKAccessToken> {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         VKSdk.onActivityResult(requestCode, resultCode, data, mLoginCallback);
     }
 

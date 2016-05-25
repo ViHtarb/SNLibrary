@@ -38,7 +38,6 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
 
     public FacebookSocialNetwork(Application application, List<String> permissions) {
         super(application);
-
         String applicationId = Utility.getMetadataApplicationId(application);
 
         if (applicationId == null) {
@@ -86,35 +85,29 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     public void requestLogin(OnLoginCompleteListener onLoginCompleteListener) {
         super.requestLogin(onLoginCompleteListener);
 
-        if (isConnected()) {
-            if (mLocalListeners.get(REQUEST_LOGIN) != null) {
-                mLocalListeners.get(REQUEST_LOGIN).onError(getId(), REQUEST_LOGIN, "Already logged", null);
+        mLoginManager.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                if (mLocalListeners.get(REQUEST_LOGIN) != null) {
+                    ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getId());
+                    mLocalListeners.remove(REQUEST_LOGIN);
+                }
             }
-        } else {
-            mLoginManager.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-                @Override
-                public void onSuccess(LoginResult loginResult) {
-                    if (mLocalListeners.get(REQUEST_LOGIN) != null) {
-                        ((OnLoginCompleteListener) mLocalListeners.get(REQUEST_LOGIN)).onLoginSuccess(getId());
-                        mLocalListeners.remove(REQUEST_LOGIN);
-                    }
-                }
 
-                @Override
-                public void onCancel() {
+            @Override
+            public void onCancel() {
 
-                }
+            }
 
-                @Override
-                public void onError(FacebookException error) {
-                    if (mLocalListeners.get(REQUEST_LOGIN) != null) {
-                        mLocalListeners.get(REQUEST_LOGIN).onError(getId(), REQUEST_LOGIN, error.getMessage(), null);
-                        mLocalListeners.remove(REQUEST_LOGIN);
-                    }
+            @Override
+            public void onError(FacebookException error) {
+                if (mLocalListeners.get(REQUEST_LOGIN) != null) {
+                    mLocalListeners.get(REQUEST_LOGIN).onError(getId(), REQUEST_LOGIN, error.getMessage(), null);
+                    mLocalListeners.remove(REQUEST_LOGIN);
                 }
-            });
-            mLoginManager.logInWithReadPermissions(getContext(), mPermissions);
-        }
+            }
+        });
+        mLoginManager.logInWithReadPermissions(getContext(), mPermissions);
     }
 
     @Override
