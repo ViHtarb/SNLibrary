@@ -9,8 +9,8 @@ import com.snl.core.listener.base.SocialNetworkListener;
 public interface OnRequestAccessTokenCompleteListener extends SocialNetworkListener {
     /**
      * Called when access token request complete.
-     * @param socialNetworkID id of social network where request was complete
+     * @param socialNetworkId id of social network where request was complete
      * @param accessToken {@link AccessToken} that social network returned
      */
-    void onRequestAccessTokenComplete(int socialNetworkID, AccessToken accessToken);
+    void onRequestAccessTokenComplete(int socialNetworkId, AccessToken accessToken);
 }
