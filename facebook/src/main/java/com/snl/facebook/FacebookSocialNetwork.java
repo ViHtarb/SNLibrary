@@ -11,6 +11,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.appevents.AppEventsLogger;
 import com.facebook.internal.Utility;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
@@ -44,6 +45,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             throw new IllegalStateException("applicationId can't be null\n" +
                     "Please check https://developers.facebook.com/docs/android/getting-started/");
         }
+        AppEventsLogger.activateApp(application, applicationId);
 
         mPermissions = permissions;
 
