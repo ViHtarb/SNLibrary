@@ -46,34 +46,21 @@
  * SOFTWARE.
  */
 
-package com.snl.facebook;
+package com.snl.core.listener;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.snl.core.listener.base.SocialNetworkListener;
 
 /**
- * Created by Viнt@rь on 28.11.2015
- * <p>Compatible FB permissions</p>
- * <p>The all FB permissions list is available in <a href="https://developers.facebook.com/docs/facebook-login/permissions/overview">documentation</a></p>
+ * Interface definition for a callback to be invoked when check friend request complete.
  */
-public final class FacebookPermissions {
-
-    public static final String PUBLIC_PROFILE = "public_profile";
-    public static final String PUBLISH_ACTIONS = "publish_actions";
-    public static final String EMAIL = "email";
-    public static final String USER_FRIENDS = "user_friends";
-
-    private FacebookPermissions() {
-        // not instantiate
-    }
+public interface OnCheckIsFriendListener extends SocialNetworkListener {
 
     /**
-     * @return base permissions list, contains {@link #PUBLIC_PROFILE} {@link #EMAIL}
+     * Called when check friend request complete.
+     *
+     * @param socialNetworkId id of social network where request was complete
+     * @param userId          user id that was checked
+     * @param isFriend        true if friends, else false
      */
-    public static List<String> getPermissions() {
-        List<String> permissions = new ArrayList<>();
-        permissions.add(PUBLIC_PROFILE);
-        permissions.add(EMAIL);
-        return permissions;
-    }
+    void onCheckIsFriendComplete(int socialNetworkId, String userId, boolean isFriend);
 }

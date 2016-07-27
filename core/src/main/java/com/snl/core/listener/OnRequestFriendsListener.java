@@ -22,22 +22,23 @@
  * SOFTWARE.
  */
 
-package com.snl.core;
+package com.snl.core.listener;
 
-import android.os.Parcelable;
+import com.snl.core.SocialPerson;
+import com.snl.core.listener.base.SocialNetworkListener;
+
+import java.util.List;
 
 /**
- * Created by Viнt@rь on 28.11.2015
+ * Interface definition for a callback to be invoked when friends list request complete.
  */
-public interface SocialPerson extends Parcelable {
+public interface OnRequestFriendsListener extends SocialNetworkListener {
 
-    String getId();
-
-    String getName();
-
-    String getProfileURL();
-
-    String getAvatarURL();
-
-    String getEmail();
+    /**
+     * Called when friends list request complete.
+     *
+     * @param socialNetworkId id of social network where request was complete
+     * @param socialFriends   ArrayList of of friends list's social persons
+     */
+    void onRequestFriendsSuccess(int socialNetworkId, List<? extends SocialPerson> socialFriends);
 }

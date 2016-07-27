@@ -1,3 +1,27 @@
+/*
+ * The MIT License (MIT)
+ * <p/>
+ * Copyright (c) 2016. Viнt@rь
+ * <p/>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * <p/>
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * <p/>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.snl.sample;
 
 import android.content.Intent;
@@ -10,11 +34,14 @@ import android.widget.Button;
 
 import com.snl.core.SocialNetwork;
 import com.snl.core.SocialNetworkManager;
-import com.snl.core.listener.OnLoginCompleteListener;
-import com.snl.core.listener.OnRequestDetailedSocialPersonCompleteListener;
+import com.snl.core.SocialPerson;
+import com.snl.core.listener.OnLoginListener;
+import com.snl.core.listener.OnRequestDetailedSocialPersonListener;
+import com.snl.core.listener.OnRequestFriendsListener;
 import com.snl.facebook.FacebookPermissions;
-import com.snl.facebook.FacebookPerson;
 import com.snl.facebook.FacebookSocialNetwork;
+
+import java.util.List;
 
 /**
  * Created by Viнt@rь on 28.11.2015
@@ -27,8 +54,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (!mSocialNetworkManager.isSocialNetworkExists(FacebookSocialNetwork.ID)) {
-            mSocialNetworkManager.addSocialNetwork(new FacebookSocialNetwork(getApplication(), FacebookPermissions.getPermissions()));
+        if (!mSocialNetworkManager.isExists(FacebookSocialNetwork.ID)) {
+            List<String> permissions = FacebookPermissions.getPermissions();
+            permissions.add(FacebookPermissions.USER_FRIENDS);
+            mSocialNetworkManager.addSocialNetwork(new FacebookSocialNetwork(getApplication(), permissions));
         }
 
         Button button = (Button) findViewById(R.id.fb_button);
@@ -36,10 +65,10 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SocialNetwork socialNetwork = mSocialNetworkManager.getSocialNetwork(FacebookSocialNetwork.ID);
+                final SocialNetwork socialNetwork = mSocialNetworkManager.getSocialNetwork(FacebookSocialNetwork.ID);
                 if (socialNetwork.isConnected()) {
                     //socialNetwork.logout();
-                    mSocialNetworkManager.getSocialNetwork(FacebookSocialNetwork.ID).requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonCompleteListener<FacebookPerson>() {
+                    /*socialNetwork.requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonListener<FacebookPerson>() {
                         @Override
                         public void onRequestDetailedSocialPersonSuccess(int socialNetworkID, FacebookPerson socialPerson) {
                             Log.d("TEST", "onRequestDetailedSocialPersonSuccess");
@@ -50,16 +79,28 @@ public class MainActivity extends AppCompatActivity {
                         public void onError(int socialNetworkID, SocialNetwork.Request request, String errorMessage, Object data) {
 
                         }
+                    });*/
+                    socialNetwork.requestFriends(new OnRequestFriendsListener() {
+
+                        @Override
+                        public void onRequestFriendsSuccess(int socialNetworkId, List<? extends SocialPerson> socialFriends) {
+                            Log.d("TEST", "onRequestFriendsSuccess");
+                            Log.d("TEST", "friends list size = " + socialFriends.size());
+                        }
+
+                        public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
+
+                        }
                     });
                     return;
                 }
-                mSocialNetworkManager.getSocialNetwork(FacebookSocialNetwork.ID).requestLogin(new OnLoginCompleteListener() {
+                socialNetwork.requestLogin(new OnLoginListener() {
                     @Override
                     public void onLoginSuccess(int socialNetworkID) {
                         Log.d("TEST", "onLoginSuccess");
-                        mSocialNetworkManager.getSocialNetwork(FacebookSocialNetwork.ID).requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonCompleteListener<FacebookPerson>() {
+                        socialNetwork.requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonListener() {
                             @Override
-                            public void onRequestDetailedSocialPersonSuccess(int socialNetworkID, FacebookPerson socialPerson) {
+                            public void onRequestDetailedSocialPersonSuccess(int socialNetworkID, SocialPerson socialPerson) {
                                 Log.d("TEST", "onRequestDetailedSocialPersonSuccess");
                                 Log.d("TEST", socialPerson.toString());
                             }
