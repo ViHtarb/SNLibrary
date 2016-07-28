@@ -96,7 +96,7 @@ public class SocialNetworkManager {
      * @param data        An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        for (int i = 0; i < mSocialNetworks.size(); ) {
+        for (int i = 0; i < mSocialNetworks.size(); i++) {
             SocialNetwork socialNetwork = mSocialNetworks.valueAt(i);
             socialNetwork.onActivityResult(requestCode, resultCode, data);
         }
