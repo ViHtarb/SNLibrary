@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 final SocialNetwork socialNetwork = mSocialNetworkManager.getSocialNetwork(FacebookSocialNetwork.ID);
                 if (socialNetwork.isConnected()) {
                     //socialNetwork.logout();
-                    /*socialNetwork.requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonListener<FacebookPerson>() {
+/*                    socialNetwork.requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonListener<FacebookPerson>() {
                         @Override
                         public void onRequestDetailedSocialPersonSuccess(int socialNetworkID, FacebookPerson socialPerson) {
                             Log.d("TEST", "onRequestDetailedSocialPersonSuccess");
@@ -80,7 +80,24 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                     });*/
-                    socialNetwork.requestFriends(new OnRequestFriendsListener() {
+
+                    if (socialNetwork instanceof FacebookSocialNetwork) {
+                        ((FacebookSocialNetwork) socialNetwork).requestInvitableFriends(new OnRequestFriendsListener() {
+                            @Override
+                            public void onRequestFriendsSuccess(int socialNetworkId, List<? extends SocialPerson> socialFriends) {
+                                Log.d("TEST", "onRequestFriendsSuccess");
+                                for (SocialPerson person : socialFriends) {
+                                    Log.d("TEST", person.toString());
+                                }
+                            }
+
+                            @Override
+                            public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
+                                Log.d("TEST", "onError");
+                            }
+                        });
+                    }
+                    /*socialNetwork.requestFriends(new OnRequestFriendsListener() {
 
                         @Override
                         public void onRequestFriendsSuccess(int socialNetworkId, List<? extends SocialPerson> socialFriends) {
@@ -91,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
 
                         }
-                    });
+                    });*/
                     return;
                 }
                 socialNetwork.requestLogin(new OnLoginListener() {

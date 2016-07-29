@@ -35,6 +35,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.internal.Utility;
 import com.facebook.login.LoginManager;
@@ -50,6 +51,7 @@ import com.snl.core.listener.OnRequestSocialPersonListener;
 import com.snl.core.listener.OnRequestSocialPersonsListener;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -281,6 +283,46 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             }
         });
         request.setParameters(parameters);
+        request.executeAsync();
+    }
+
+    /**
+     * <p>Get a list of friends that can be invited to install a Facebook game</p>
+     * The Invitable Friends API is only available to apps classified as Games, which also have a Canvas presence
+     *
+     * @param listener listener for getting list of current user friends
+     */
+    public void requestInvitableFriends(final OnRequestFriendsListener listener) {
+        super.requestFriends(listener);
+
+        if (!isConnected()) {
+            if (isRegistered(listener)) {
+                listener.onError(getId(), Request.FRIENDS, "Please login first", null);
+                cancelFriendsRequest();
+            }
+            return;
+        }
+
+        Bundle parameters = new Bundle();
+        parameters.putInt("limit", 5000);
+        GraphRequest request = new GraphRequest(getAccessToken(), "/me/invitable_friends", parameters, HttpMethod.GET, new GraphRequest.Callback() {
+            @Override
+            public void onCompleted(GraphResponse response) {
+                if (isRegistered(listener)) {
+                    if (response.getError() == null) {
+                        try {
+                            JSONArray persons = response.getJSONObject().getJSONArray("data");
+                            listener.onRequestFriendsSuccess(getId(), parsePersons(persons));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        listener.onError(getId(), Request.FRIENDS, response.getError().getErrorMessage(), null);
+                    }
+                    cancelFriendsRequest();
+                }
+            }
+        });
         request.executeAsync();
     }
 
