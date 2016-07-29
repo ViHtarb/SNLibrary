@@ -305,6 +305,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
 
         Bundle parameters = new Bundle();
         parameters.putInt("limit", 5000);
+        parameters.putString("fields", "picture.width(480).height(480)");
         GraphRequest request = new GraphRequest(getAccessToken(), "/me/invitable_friends", parameters, HttpMethod.GET, new GraphRequest.Callback() {
             @Override
             public void onCompleted(GraphResponse response) {
