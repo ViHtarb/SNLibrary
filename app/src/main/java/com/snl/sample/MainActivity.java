@@ -37,8 +37,8 @@ import com.snl.core.SocialNetworkManager;
 import com.snl.core.SocialPerson;
 import com.snl.core.listener.OnLoginListener;
 import com.snl.core.listener.OnRequestDetailedSocialPersonListener;
-import com.snl.core.listener.OnRequestFriendsListener;
 import com.snl.facebook.FacebookPermissions;
+import com.snl.facebook.FacebookPerson;
 import com.snl.facebook.FacebookSocialNetwork;
 
 import java.util.List;
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 final SocialNetwork socialNetwork = mSocialNetworkManager.getSocialNetwork(FacebookSocialNetwork.ID);
                 if (socialNetwork.isConnected()) {
                     //socialNetwork.logout();
-/*                    socialNetwork.requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonListener<FacebookPerson>() {
+                    socialNetwork.requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonListener<FacebookPerson>() {
                         @Override
                         public void onRequestDetailedSocialPersonSuccess(int socialNetworkID, FacebookPerson socialPerson) {
                             Log.d("TEST", "onRequestDetailedSocialPersonSuccess");
@@ -79,9 +79,9 @@ public class MainActivity extends AppCompatActivity {
                         public void onError(int socialNetworkID, SocialNetwork.Request request, String errorMessage, Object data) {
 
                         }
-                    });*/
+                    });
 
-                    if (socialNetwork instanceof FacebookSocialNetwork) {
+ /*                   if (socialNetwork instanceof FacebookSocialNetwork) {
                         ((FacebookSocialNetwork) socialNetwork).requestInvitableFriends(new OnRequestFriendsListener() {
                             @Override
                             public void onRequestFriendsSuccess(int socialNetworkId, List<? extends SocialPerson> socialFriends) {
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d("TEST", "onError");
                             }
                         });
-                    }
+                    }*/
                     /*socialNetwork.requestFriends(new OnRequestFriendsListener() {
 
                         @Override

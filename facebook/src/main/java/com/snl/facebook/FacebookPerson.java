@@ -46,14 +46,17 @@ public class FacebookPerson implements SocialPerson {
         }
     };
 
-    @SerializedName("id")
+    @SerializedName(value = "id", alternate = "uid")
     private String mId; // Id of social person from chosen social network.
 
-    @SerializedName("name")
+    @SerializedName(value = "name", alternate = "text")
     private String mName; // Name of social person from social network.
 
     @SerializedName("link")
     private String mProfileURL; // Profile URL of social person from social network.
+
+    @SerializedName("photo")
+    private String mAvatarURL;
 
     @SerializedName("email")
     private String mEmail; // Email of social person from social network if exist.
@@ -147,7 +150,7 @@ public class FacebookPerson implements SocialPerson {
 
     @Override
     public String getAvatarURL() {
-        return mAvatar != null ? mAvatar.getURL() : "http://graph.facebook.com/" + mId + "/picture?type=large";
+        return mAvatar != null ? mAvatar.getURL() : mAvatarURL != null ? mAvatarURL : "http://graph.facebook.com/" + mId + "/picture?type=large";
     }
 
     @Override

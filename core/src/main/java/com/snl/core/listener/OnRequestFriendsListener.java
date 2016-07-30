@@ -40,5 +40,5 @@ public interface OnRequestFriendsListener extends SocialNetworkListener {
      * @param socialNetworkId id of social network where request was complete
      * @param socialFriends   ArrayList of of friends list's social persons
      */
-    void onRequestFriendsSuccess(int socialNetworkId, List<? extends SocialPerson> socialFriends);
+    void onRequestFriendsSuccess(int socialNetworkId, List<SocialPerson> socialFriends);
 }

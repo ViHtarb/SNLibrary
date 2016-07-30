@@ -43,6 +43,7 @@ import com.facebook.login.LoginResult;
 import com.google.gson.reflect.TypeToken;
 import com.snl.core.SocialNetwork;
 import com.snl.core.SocialNetworkException;
+import com.snl.core.SocialPerson;
 import com.snl.core.listener.OnCheckIsFriendListener;
 import com.snl.core.listener.OnLoginListener;
 import com.snl.core.listener.OnRequestDetailedSocialPersonListener;
@@ -331,7 +332,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
         return GSON.fromJson(person.toString(), FacebookPerson.class);
     }
 
-    private static List<FacebookPerson> parsePersons(JSONArray persons) {
+    private static List<SocialPerson> parsePersons(JSONArray persons) {
         return GSON.fromJson(persons.toString(), new TypeToken<List<FacebookPerson>>(){}.getType());
     }
 }
