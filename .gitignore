@@ -1,8 +1,11 @@
 *.iml
 .gradle
 /local.properties
-/.idea/workspace.xml
+/.idea/*.xml
+/.idea/dictionaries
+/.idea/inspectionProfiles
 /.idea/libraries
 .DS_Store
 /build
 /captures
+/secring.gpg
