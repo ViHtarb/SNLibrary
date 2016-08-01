@@ -288,8 +288,17 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     /**
-     * <p>Get a list of friends that can be invited to install a Facebook game</p>
-     * The Invitable Friends API is only available to apps classified as Games, which also have a Canvas presence
+     * Get a list of friends that can be invited to install a Facebook game.
+     *
+     * <p>
+     *     The Invitable Friends API is only available to apps classified as Games,
+     *     which also have a Canvas presence.
+     * </p>
+     * <p>
+     *     See Facebook Graph API
+     *     <a href="https://developers.facebook.com/docs/graph-api/reference/user/invitable_friends">User invitable_friends</a>
+     *     guide for more details.
+     * </p>
      *
      * @param listener listener for getting list of current user friends
      */
