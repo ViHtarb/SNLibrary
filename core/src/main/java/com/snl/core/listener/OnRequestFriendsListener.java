@@ -22,21 +22,23 @@
  * SOFTWARE.
  */
 
-package com.snl.core.listener.base;
+package com.snl.core.listener;
 
-import com.snl.core.SocialNetwork;
+import com.snl.core.SocialPerson;
+import com.snl.core.listener.base.SocialNetworkListener;
+
+import java.util.List;
 
 /**
- * Base interface definition for a callback to be invoked when any social network request complete.
+ * Interface definition for a callback to be invoked when friends list request complete.
  */
-public interface SocialNetworkListener {
+public interface OnRequestFriendsListener extends SocialNetworkListener {
+
     /**
-     * Called when social network request complete with error.
+     * Called when friends list request complete.
      *
-     * @param socialNetworkId id of social network where request was complete with error
-     * @param request         request where occurred error
-     * @param errorMessage    error message where request was complete with error
-     * @param data            data of social network where request was complete with error
+     * @param socialNetworkId id of social network where request was complete
+     * @param socialFriends   ArrayList of of friends list's social persons
      */
-    void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data);
+    void onRequestFriendsSuccess(int socialNetworkId, List<SocialPerson> socialFriends);
 }

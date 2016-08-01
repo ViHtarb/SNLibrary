@@ -1,9 +1,35 @@
+/*
+ * The MIT License (MIT)
+ * <p/>
+ * Copyright (c) 2016. Viнt@rь
+ * <p/>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * <p/>
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * <p/>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.snl.facebook;
 
 import android.os.Parcel;
 
 import com.google.gson.annotations.SerializedName;
 import com.snl.core.SocialPerson;
+
+import java.io.Serializable;
 
 /**
  * Created by Viнt@rь on 28.11.2015
@@ -20,14 +46,17 @@ public class FacebookPerson implements SocialPerson {
         }
     };
 
-    @SerializedName("id")
+    @SerializedName(value = "id", alternate = "uid")
     private String mId; // Id of social person from chosen social network.
 
-    @SerializedName("name")
+    @SerializedName(value = "name", alternate = "text")
     private String mName; // Name of social person from social network.
 
     @SerializedName("link")
     private String mProfileURL; // Profile URL of social person from social network.
+
+    @SerializedName("photo")
+    private String mAvatarURL;
 
     @SerializedName("email")
     private String mEmail; // Email of social person from social network if exist.
@@ -50,6 +79,9 @@ public class FacebookPerson implements SocialPerson {
     @SerializedName("verified")
     private String isVerified; // Check if user is verified
 
+    @SerializedName("picture")
+    private Avatar mAvatar; // avatar data from /me/invitable_friends graph request
+
     private FacebookPerson(Parcel in) {
         mId = in.readString();
         mName = in.readString();
@@ -61,6 +93,7 @@ public class FacebookPerson implements SocialPerson {
         mGender = in.readString();
         mBirthday = in.readString();
         isVerified = in.readString();
+        mAvatar = (Avatar) in.readSerializable();
     }
 
     @Override
@@ -80,6 +113,7 @@ public class FacebookPerson implements SocialPerson {
         dest.writeString(mGender);
         dest.writeString(mBirthday);
         dest.writeString(isVerified);
+        dest.writeSerializable(mAvatar);
     }
 
     @Override
@@ -116,7 +150,7 @@ public class FacebookPerson implements SocialPerson {
 
     @Override
     public String getAvatarURL() {
-        return "http://graph.facebook.com/" + mId + "/picture?type=large";
+        return mAvatar != null ? mAvatar.getURL() : mAvatarURL != null ? mAvatarURL : "http://graph.facebook.com/" + mId + "/picture?type=large";
     }
 
     @Override
@@ -146,5 +180,21 @@ public class FacebookPerson implements SocialPerson {
 
     public String isVerified() {
         return isVerified;
+    }
+
+    private static final class Avatar implements Serializable {
+
+        @SerializedName("data")
+        private Data mData;
+
+        public String getURL() {
+            return mData.mURL;
+        }
+
+        private static final class Data {
+
+            @SerializedName("url")
+            private String mURL;
+        }
     }
 }

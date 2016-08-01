@@ -1,3 +1,27 @@
+/*
+ * The MIT License (MIT)
+ * <p/>
+ * Copyright (c) 2016. Viнt@rь
+ * <p/>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * <p/>
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * <p/>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.snl.core;
 
 import android.app.Activity;
@@ -9,16 +33,16 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 
 import com.google.gson.Gson;
-import com.snl.core.listener.OnCheckIsFriendCompleteListener;
-import com.snl.core.listener.OnLoginCompleteListener;
-import com.snl.core.listener.OnPostingCompleteListener;
-import com.snl.core.listener.OnRequestAccessTokenCompleteListener;
-import com.snl.core.listener.OnRequestAddFriendCompleteListener;
-import com.snl.core.listener.OnRequestDetailedSocialPersonCompleteListener;
-import com.snl.core.listener.OnRequestGetFriendsCompleteListener;
-import com.snl.core.listener.OnRequestRemoveFriendCompleteListener;
-import com.snl.core.listener.OnRequestSocialPersonCompleteListener;
-import com.snl.core.listener.OnRequestSocialPersonsCompleteListener;
+import com.snl.core.listener.OnCheckIsFriendListener;
+import com.snl.core.listener.OnLoginListener;
+import com.snl.core.listener.OnPostingListener;
+import com.snl.core.listener.OnRequestAccessTokenListener;
+import com.snl.core.listener.OnRequestAddFriendListener;
+import com.snl.core.listener.OnRequestDetailedSocialPersonListener;
+import com.snl.core.listener.OnRequestFriendsListener;
+import com.snl.core.listener.OnRequestRemoveFriendListener;
+import com.snl.core.listener.OnRequestSocialPersonListener;
+import com.snl.core.listener.OnRequestSocialPersonsListener;
 import com.snl.core.listener.base.SocialNetworkListener;
 
 import java.io.File;
@@ -50,19 +74,33 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
         REMOVE_FRIEND
     }
 
-    /*** Share bundle constant for message*/
+    /***
+     * Share bundle constant for message
+     */
     public static final String BUNDLE_MESSAGE = "message";
-    /*** Share bundle constant for link*/
+    /***
+     * Share bundle constant for link
+     */
     public static final String BUNDLE_LINK = "link";
-    /*** Share bundle constant for friendslist*/
+    /***
+     * Share bundle constant for friendslist
+     */
     public static final String DIALOG_FRIENDS = "friends";
-    /*** Share bundle constant for title*/
+    /***
+     * Share bundle constant for title
+     */
     public static final String BUNDLE_NAME = "name";
-    /*** Share bundle constant for application name*/
+    /***
+     * Share bundle constant for application name
+     */
     public static final String BUNDLE_APP_NAME = "app_name";
-    /*** Share bundle constant for caption*/
+    /***
+     * Share bundle constant for caption
+     */
     public static final String BUNDLE_CAPTION = "caption";
-    /*** Share bundle constant for picture*/
+    /***
+     * Share bundle constant for picture
+     */
     public static final String BUNDLE_PICTURE = "picture";
 
     protected static final Gson GSON = new Gson();
@@ -119,15 +157,17 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Called when an activity you launched exits, giving you the requestCode you started it with, the resultCode it returned, and any additional data from it. Overrided in chosen social network
+     *
      * @param requestCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
-     * @param resultCode The integer result code returned by the child activity through its setResult().
-     * @param data An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     * @param resultCode  The integer result code returned by the child activity through its setResult().
+     * @param data        An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
     }
 
     /**
      * Get id of social network
+     *
      * @return Social network ids:<br>
      * 1 - FB<br>
      * 2 - VK<br>
@@ -136,12 +176,14 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Check if selected social network connected: true or false
+     *
      * @return true if connected, else false
      */
     public abstract boolean isConnected();
 
     /**
      * Return {@link T} (except GooglePlus)
+     *
      * @return {@link T}
      */
     public abstract T getAccessToken();
@@ -152,6 +194,7 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
     public abstract void logout();
 
     //////// REQUESTS //////////////
+
     /**
      * Login to social network using global listener
      */
@@ -161,10 +204,11 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Login to social network using local listener
+     *
      * @param listener listener for login complete
      */
     @CallSuper
-    public void requestLogin(OnLoginCompleteListener listener) {
+    public void requestLogin(OnLoginListener listener) {
         if (isConnected()) {
             throw new SocialNetworkException("Already connected, check isConnected() method first");
         }
@@ -175,15 +219,16 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
     /**
      * Get {@link AccessToken} using global listener
      */
-    public void requestAccessToken(){
+    public void requestAccessToken() {
         requestAccessToken(null);
     }
 
     /**
      * Get {@link AccessToken} using local listener
+     *
      * @param listener listener for request {@link AccessToken} complete
      */
-    public void requestAccessToken(OnRequestAccessTokenCompleteListener listener) {
+    public void requestAccessToken(OnRequestAccessTokenListener listener) {
         registerListener(Request.ACCESS_TOKEN, listener);
     }
 
@@ -196,29 +241,32 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Get {@link SocialPerson} of current user using local listener
+     *
      * @param listener listener for request {@link SocialPerson}
      */
-    public void requestCurrentPerson(OnRequestSocialPersonCompleteListener listener) {
+    public void requestCurrentPerson(OnRequestSocialPersonListener listener) {
         registerListener(Request.PERSON, listener);
     }
 
     /**
      * Get detailed profile for current user using global listener. Look for detailed persons in social networks packages.
      */
-    public void requestDetailedCurrentPerson(){
+    public void requestDetailedCurrentPerson() {
         requestDetailedSocialPerson(null);
     }
 
     /**
      * Get detailed profile for current user using global listener. Look for detailed persons in social networks packages.
+     *
      * @param listener listener for request detailed social person
      */
-    public void requestDetailedCurrentPerson(OnRequestDetailedSocialPersonCompleteListener listener) {
+    public void requestDetailedCurrentPerson(OnRequestDetailedSocialPersonListener listener) {
         registerListener(Request.DETAIL_PERSON, listener);
     }
 
     /**
      * Get {@link SocialPerson} by user id using global listener
+     *
      * @param userId user id in social network
      */
     public void requestSocialPerson(String userId) {
@@ -227,15 +275,17 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Get {@link SocialPerson} by user id using local listener
-     * @param userId user id in social network
+     *
+     * @param userId   user id in social network
      * @param listener listener for request {@link SocialPerson}
      */
-    public void requestSocialPerson(String userId, OnRequestSocialPersonCompleteListener listener) {
+    public void requestSocialPerson(String userId, OnRequestSocialPersonListener listener) {
         registerListener(Request.SOCIAL_PERSON, listener);
     }
 
     /**
      * Get array list of {@link SocialPerson} by array of user ids using global listener
+     *
      * @param userId array of user ids in social network
      */
     public void requestSocialPersons(String[] userId) {
@@ -244,15 +294,17 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Get array list of {@link SocialPerson} by array of user ids using local listener
-     * @param userId array of user ids in social network
+     *
+     * @param userId   array of user ids in social network
      * @param listener listener for request ArrayList of {@link SocialPerson}
      */
-    public void requestSocialPersons(String[] userId, OnRequestSocialPersonsCompleteListener listener) {
+    public void requestSocialPersons(String[] userId, OnRequestSocialPersonsListener listener) {
         registerListener(Request.SOCIAL_PERSONS, listener);
     }
 
     /**
      * Get detailed profile for user by id using global listener. Look for detailed persons in social networks packages.
+     *
      * @param userId user id in social network
      */
     public void requestDetailedSocialPerson(String userId) {
@@ -261,15 +313,17 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Get detailed profile for user by id using local listener. Look for detailed persons in social networks packages.
-     * @param userId user id in social network
+     *
+     * @param userId   user id in social network
      * @param listener listener for request detailed social person
      */
-    public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener listener) {
+    public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonListener listener) {
         registerListener(Request.DETAIL_SOCIAL_PERSON, listener);
     }
 
     /**
      * Check if user by id is friend of current user using global listener
+     *
      * @param userId user id that should be checked as friend of current user
      */
     public void requestCheckIsFriend(String userId) {
@@ -278,29 +332,33 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Check if user by id is friend of current user using local listener
-     * @param userId user id that should be checked as friend of current user
+     *
+     * @param userId   user id that should be checked as friend of current user
      * @param listener listener for checking friend request
      */
-    public void requestCheckIsFriend(String userId, OnCheckIsFriendCompleteListener listener) {
+    public void requestCheckIsFriend(String userId, OnCheckIsFriendListener listener) {
         registerListener(Request.CHECK_IS_FRIEND, listener);
     }
+
     /**
      * Get current user friends list using global listener
      */
-    public void requestGetFriends() {
-        requestGetFriends(null);
+    public void requestFriends() {
+        requestFriends(null);
     }
 
     /**
      * Get current user friends list using local listener
+     *
      * @param listener listener for getting list of current user friends
      */
-    public void requestGetFriends(OnRequestGetFriendsCompleteListener listener) {
+    public void requestFriends(OnRequestFriendsListener listener) {
         registerListener(Request.FRIENDS, listener);
     }
 
     /**
      * Invite friend by id to current user using global listener
+     *
      * @param userId id of user that should be invited
      */
     public void requestAddFriend(String userId) {
@@ -309,15 +367,17 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Invite friend by id to current user using local listener
-     * @param userId id of user that should be invited
+     *
+     * @param userId   id of user that should be invited
      * @param listener listener for invite result
      */
-    public void requestAddFriend(String userId, OnRequestAddFriendCompleteListener listener) {
+    public void requestAddFriend(String userId, OnRequestAddFriendListener listener) {
         registerListener(Request.ADD_FRIEND, listener);
     }
 
     /**
      * Remove friend by id from current user friends using global listener
+     *
      * @param userId user id that should be removed from friends
      */
     public void requestRemoveFriend(String userId) {
@@ -326,15 +386,17 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Remove friend by id from current user friends using local listener
-     * @param userId user id that should be removed from friends
+     *
+     * @param userId   user id that should be removed from friends
      * @param listener listener to remove friend request response
      */
-    public void requestRemoveFriend(String userId, OnRequestRemoveFriendCompleteListener listener) {
+    public void requestRemoveFriend(String userId, OnRequestRemoveFriendListener listener) {
         registerListener(Request.REMOVE_FRIEND, listener);
     }
 
     /**
      * Post message to social network using global listener
+     *
      * @param message message that should be shared
      */
     public void requestPostMessage(String message) {
@@ -343,16 +405,18 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Post message to social network using local listener
+     *
      * @param message  message that should be shared
      * @param listener listener for posting request
      */
-    public void requestPostMessage(String message, OnPostingCompleteListener listener) {
+    public void requestPostMessage(String message, OnPostingListener listener) {
         registerListener(Request.POST_MESSAGE, listener);
     }
 
     /**
      * Post photo to social network using global listener
-     * @param photo photo that should be shared
+     *
+     * @param photo   photo that should be shared
      * @param message message that should be shared with photo
      */
     public void requestPostPhoto(File photo, String message) {
@@ -361,16 +425,18 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Post photo to social network using local listener
-     * @param photo photo that should be shared
-     * @param message message that should be shared with photo
+     *
+     * @param photo    photo that should be shared
+     * @param message  message that should be shared with photo
      * @param listener listener for posting request
      */
-    public void requestPostPhoto(File photo, String message, OnPostingCompleteListener listener) {
+    public void requestPostPhoto(File photo, String message, OnPostingListener listener) {
         registerListener(Request.POST_PHOTO, listener);
     }
 
     /**
      * Get Share dialog of social network using global listener
+     *
      * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
      */
     public void requestPostDialog(Bundle bundle) {
@@ -379,16 +445,18 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Get Share dialog of social network using global listener
-     * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
+     *
+     * @param bundle   bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
      * @param listener listener for posting request
      */
-    public void requestPostDialog(Bundle bundle, OnPostingCompleteListener listener) {
+    public void requestPostDialog(Bundle bundle, OnPostingListener listener) {
         registerListener(Request.POST_DIALOG, listener);
     }
 
     /**
      * Post link with comment to social network using global listener
-     * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
+     *
+     * @param bundle  bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
      * @param message message that should be shared with bundle
      */
     public void requestPostLink(Bundle bundle, String message) {
@@ -397,11 +465,12 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
 
     /**
      * Post link with comment to social network using local listener
-     * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
-     * @param message message that should be shared with bundle
+     *
+     * @param bundle   bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
+     * @param message  message that should be shared with bundle
      * @param listener listener for posting request
      */
-    public void requestPostLink(Bundle bundle, String message, OnPostingCompleteListener listener) {
+    public void requestPostLink(Bundle bundle, String message, OnPostingListener listener) {
         registerListener(Request.POST_LINK, listener);
     }
 
@@ -422,32 +491,32 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
     /**
      * Cancel current user {@link SocialPerson} request
      */
-    public void cancelGetCurrentPersonRequest() {
+    public void cancelCurrentPersonRequest() {
         mLocalListeners.remove(Request.PERSON);
     }
 
-    public void cancelGetDetailedCurrentPersonRequest() {
+    public void cancelDetailedCurrentPersonRequest() {
         mLocalListeners.remove(Request.DETAIL_PERSON);
     }
 
     /**
      * Cancel user by id {@link SocialPerson} request
      */
-    public void cancelGetSocialPersonRequest() {
+    public void cancelSocialPersonRequest() {
         mLocalListeners.remove(Request.SOCIAL_PERSON);
     }
 
     /**
      * Cancel users by array of ids request
      */
-    public void cancelGetSocialPersonsRequest() {
+    public void cancelSocialPersonsRequest() {
         mLocalListeners.remove(Request.SOCIAL_PERSONS);
     }
 
     /**
      * Cancel detailed user request
      */
-    public void cancelGetDetailedSocialPersonRequest() {
+    public void cancelDetailedSocialPersonRequest() {
         mLocalListeners.remove(Request.DETAIL_SOCIAL_PERSON);
     }
 
@@ -461,7 +530,7 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
     /**
      * Cancel friends list request
      */
-    public void cancelGetFriendsRequest() {
+    public void cancelFriendsRequest() {
         mLocalListeners.remove(Request.FRIENDS);
     }
 
@@ -542,123 +611,139 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
     }
 
     //////////////////// SETTERS FOR GLOBAL LISTENERS ////////////////////
+
     /**
      * Register a callback to be invoked when login complete.
+     *
      * @param listener the callback that will run
      */
-    public void setOnLoginCompleteListener(OnLoginCompleteListener listener) {
+    public void setOnLoginListener(OnLoginListener listener) {
         mGlobalListeners.put(Request.LOGIN, listener);
     }
 
     /**
      * Register a callback to be invoked when {@link AccessToken} request complete.
+     *
      * @param listener the callback that will run
      */
-    public void setOnRequestAccessTokenCompleteListener(OnRequestAccessTokenCompleteListener listener) {
+    public void setOnRequestAccessTokenListener(OnRequestAccessTokenListener listener) {
         mGlobalListeners.put(Request.ACCESS_TOKEN, listener);
     }
 
     /**
      * Register a callback to be invoked when current {@link SocialPerson} request complete.
+     *
      * @param listener the callback that will run
      */
-    public void setOnRequestCurrentPersonCompleteListener(OnRequestSocialPersonCompleteListener listener) {
+    public void setOnRequestCurrentPersonListener(OnRequestSocialPersonListener listener) {
         mGlobalListeners.put(Request.PERSON, listener);
     }
 
     /**
      * Register a callback to be invoked when detailed current person request complete. Look for detailed persons in social networks packages.
+     *
      * @param listener the callback that will run
      */
-    public void setOnRequestDetailedCurrentPersonCompleteListener(OnRequestDetailedSocialPersonCompleteListener listener) {
+    public void setOnRequestDetailedCurrentPersonListener(OnRequestDetailedSocialPersonListener listener) {
         mGlobalListeners.put(Request.DETAIL_PERSON, listener);
     }
 
     /**
      * Register a callback to be invoked when {@link SocialPerson} by user id request complete.
+     *
      * @param listener the callback that will run
      */
-    public void setOnRequestSocialPersonCompleteListener(OnRequestSocialPersonCompleteListener listener) {
+    public void setOnRequestSocialPersonListener(OnRequestSocialPersonListener listener) {
         mGlobalListeners.put(Request.SOCIAL_PERSON, listener);
     }
 
     /**
      * Register a callback to be invoked when detailed social person request complete. Look for detailed persons in social networks packages.
+     *
      * @param listener the callback that will run
      */
-    public void setOnRequestDetailedSocialPersonCompleteListener(OnRequestDetailedSocialPersonCompleteListener listener) {
+    public void setOnRequestDetailedSocialPersonListener(OnRequestDetailedSocialPersonListener listener) {
         mGlobalListeners.put(Request.DETAIL_SOCIAL_PERSON, listener);
     }
 
     /**
      * Register a callback to be invoked when {@link SocialPerson}s by array of user ids request complete.
+     *
      * @param listener the callback that will run
      */
-    public void setOnRequestSocialPersonsCompleteListener(OnRequestSocialPersonsCompleteListener listener) {
+    public void setOnRequestSocialPersonsListener(OnRequestSocialPersonsListener listener) {
         mGlobalListeners.put(Request.SOCIAL_PERSONS, listener);
     }
 
     /**
      * Register a callback to be invoked when check friend request complete.
+     *
      * @param listener the callback that will run
      */
-    public void setOnCheckIsFriendListener(OnCheckIsFriendCompleteListener listener) {
+    public void setOnCheckIsFriendListener(OnCheckIsFriendListener listener) {
         mGlobalListeners.put(Request.CHECK_IS_FRIEND, listener);
     }
 
     /**
      * Register a callback to be invoked when post message request complete.
+     *
      * @param listener the callback that will run
      */
-    public void setOnPostingMessageCompleteListener(OnPostingCompleteListener listener) {
+    public void setOnPostingMessageListener(OnPostingListener listener) {
         mGlobalListeners.put(Request.POST_MESSAGE, listener);
     }
 
     /**
      * Register a callback to be invoked when get friends list request complete.
+     *
      * @param listener the callback that will run
      */
-    public void setOnRequestGetFriendsCompleteListener(OnRequestGetFriendsCompleteListener listener) {
+    public void setOnRequestGetFriendsListener(OnRequestFriendsListener listener) {
         mGlobalListeners.put(Request.FRIENDS, listener);
     }
 
     /**
      * Register a callback to be invoked when invite friend request complete.
+     *
      * @param listener the callback that will run
      */
-    public void setOnRequestAddFriendCompleteListener(OnRequestAddFriendCompleteListener listener) {
+    public void setOnRequestAddFriendListener(OnRequestAddFriendListener listener) {
         mGlobalListeners.put(Request.ADD_FRIEND, listener);
     }
 
     /**
      * Register a callback to be invoked when remove friend request complete.
+     *
      * @param listener the callback that will run
      */
-    public void setOnRequestRemoveFriendCompleteListener(OnRequestRemoveFriendCompleteListener listener) {
+    public void setOnRequestRemoveFriendListener(OnRequestRemoveFriendListener listener) {
         mGlobalListeners.put(Request.REMOVE_FRIEND, listener);
     }
 
     /**
      * Register a callback to be invoked when post photo request complete.
+     *
      * @param listener the callback that will run
      */
-    public void setOnPostingPhotoCompleteListener(OnPostingCompleteListener listener) {
+    public void setOnPostingPhotoListener(OnPostingListener listener) {
         mGlobalListeners.put(Request.POST_PHOTO, listener);
     }
 
     /**
      * Register a callback to be invoked when post link request complete.
+     *
      * @param listener the callback that will run
      */
-    public void setOnPostingLinkCompleteListener(OnPostingCompleteListener listener) {
+    public void setOnPostingLinkListener(OnPostingListener listener) {
         mGlobalListeners.put(Request.POST_LINK, listener);
     }
 
     /**
      * Register a callback to be invoked when share dialog request complete.
+     *
      * @param listener the callback that will run
      */
-    public void setOnPostingDialogCompleteListener(OnPostingCompleteListener listener) {
+    public void setOnPostingDialogListener(OnPostingListener listener) {
         mGlobalListeners.put(Request.POST_DIALOG, listener);
     }
 }

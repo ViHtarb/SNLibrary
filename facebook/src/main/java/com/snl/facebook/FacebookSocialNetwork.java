@@ -1,3 +1,27 @@
+/*
+ * The MIT License (MIT)
+ * <p/>
+ * Copyright (c) 2016. Viнt@rь
+ * <p/>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * <p/>
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * <p/>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.snl.facebook;
 
 import android.app.Activity;
@@ -11,16 +35,24 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.appevents.AppEventsLogger;
 import com.facebook.internal.Utility;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.google.gson.reflect.TypeToken;
 import com.snl.core.SocialNetwork;
 import com.snl.core.SocialNetworkException;
-import com.snl.core.listener.OnLoginCompleteListener;
-import com.snl.core.listener.OnRequestDetailedSocialPersonCompleteListener;
-import com.snl.core.listener.OnRequestSocialPersonCompleteListener;
-import com.snl.core.listener.OnRequestSocialPersonsCompleteListener;
+import com.snl.core.SocialPerson;
+import com.snl.core.listener.OnCheckIsFriendListener;
+import com.snl.core.listener.OnLoginListener;
+import com.snl.core.listener.OnRequestDetailedSocialPersonListener;
+import com.snl.core.listener.OnRequestFriendsListener;
+import com.snl.core.listener.OnRequestSocialPersonListener;
+import com.snl.core.listener.OnRequestSocialPersonsListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -44,6 +76,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             throw new IllegalStateException("applicationId can't be null\n" +
                     "Please check https://developers.facebook.com/docs/android/getting-started/");
         }
+        AppEventsLogger.activateApp(application, applicationId);
 
         mPermissions = permissions;
 
@@ -82,7 +115,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     @Override
-    public void requestLogin(final OnLoginCompleteListener listener) {
+    public void requestLogin(final OnLoginListener listener) {
         super.requestLogin(listener);
 
         mLoginManager.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
@@ -114,13 +147,13 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     @Override
-    public void requestCurrentPerson(final OnRequestSocialPersonCompleteListener listener) {
+    public void requestCurrentPerson(final OnRequestSocialPersonListener listener) {
         super.requestCurrentPerson(listener);
 
         if (!isConnected()) {
             if (isRegistered(listener)) {
                 listener.onError(getId(), Request.PERSON, "Please login first", null);
-                cancelGetCurrentPersonRequest();
+                cancelCurrentPersonRequest();
             }
             return;
         }
@@ -136,7 +169,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
                     } else {
                         listener.onError(getId(), Request.PERSON, response.getError().getErrorMessage(), null);
                     }
-                    cancelGetCurrentPersonRequest();
+                    cancelCurrentPersonRequest();
                 }
             }
         });
@@ -146,13 +179,13 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void requestDetailedCurrentPerson(final OnRequestDetailedSocialPersonCompleteListener listener) {
+    public void requestDetailedCurrentPerson(final OnRequestDetailedSocialPersonListener listener) {
         super.requestDetailedCurrentPerson(listener);
 
         if (!isConnected()) {
             if (isRegistered(listener)) {
                 listener.onError(getId(), Request.DETAIL_PERSON, "Please login first", null);
-                cancelGetDetailedCurrentPersonRequest();
+                cancelDetailedCurrentPersonRequest();
             }
             return;
         }
@@ -168,7 +201,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
                     } else {
                         listener.onError(getId(), Request.DETAIL_PERSON, response.getError().getErrorMessage(), null);
                     }
-                    cancelGetDetailedCurrentPersonRequest();
+                    cancelDetailedCurrentPersonRequest();
                 }
             }
         });
@@ -178,38 +211,137 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
 
     /**
      * Not supported via Facebook sdk.
-     * @throws SocialNetworkException
-     * @param userId user id in social network
+     *
+     * @param userId   user id in social network
      * @param listener listener for request {@link com.snl.core.SocialPerson}
+     * @throws SocialNetworkException
      */
     @Override
-    public void requestSocialPerson(String userId, OnRequestSocialPersonCompleteListener listener) {
+    public void requestSocialPerson(String userId, OnRequestSocialPersonListener listener) {
         throw new SocialNetworkException("requestSocialPerson isn't allowed for FacebookSocialNetwork");
     }
 
     /**
      * Not supported via Facebook sdk.
-     * @throws SocialNetworkException
-     * @param userId array of user ids in social network
+     *
+     * @param userId   array of user ids in social network
      * @param listener listener for request ArrayList of {@link com.snl.core.SocialPerson}
+     * @throws SocialNetworkException
      */
     @Override
-    public void requestSocialPersons(String[] userId, OnRequestSocialPersonsCompleteListener listener) {
+    public void requestSocialPersons(String[] userId, OnRequestSocialPersonsListener listener) {
         throw new SocialNetworkException("requestSocialPersons isn't allowed for FacebookSocialNetwork");
     }
 
     /**
      * Not supported via Facebook sdk.
-     * @throws SocialNetworkException
-     * @param userId user id in social network
+     *
+     * @param userId   user id in social network
      * @param listener listener for request {@link FacebookPerson}
+     * @throws SocialNetworkException
      */
     @Override
-    public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonCompleteListener listener) {
+    public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonListener listener) {
         throw new SocialNetworkException("requestDetailedSocialPerson isn't allowed for FacebookSocialNetwork");
+    }
+
+    /**
+     * Not supported via Facebook sdk
+     *
+     * @param userId   user id that should be checked as friend of current user
+     * @param listener listener for checking friend request
+     */
+    @Override
+    public void requestCheckIsFriend(String userId, OnCheckIsFriendListener listener) {
+        throw new SocialNetworkException("requestCheckIsFriend isn't allowed for FacebookSocialNetwork");
+    }
+
+    @Override
+    public void requestFriends(final OnRequestFriendsListener listener) {
+        super.requestFriends(listener);
+
+        if (!isConnected()) {
+            if (isRegistered(listener)) {
+                listener.onError(getId(), Request.FRIENDS, "Please login first", null);
+                cancelFriendsRequest();
+            }
+            return;
+        }
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id, name, link, email");
+        GraphRequest request = GraphRequest.newMyFriendsRequest(getAccessToken(), new GraphRequest.GraphJSONArrayCallback() {
+            @Override
+            public void onCompleted(JSONArray objects, GraphResponse response) {
+                if (isRegistered(listener)) {
+                    if (response.getError() == null) {
+                        listener.onRequestFriendsSuccess(getId(), parsePersons(objects));
+                    } else {
+                        listener.onError(getId(), Request.FRIENDS, response.getError().getErrorMessage(), null);
+                    }
+                    cancelFriendsRequest();
+                }
+            }
+        });
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
+
+    /**
+     * Get a list of friends that can be invited to install a Facebook game.
+     *
+     * <p>
+     *     The Invitable Friends API is only available to apps classified as Games,
+     *     which also have a Canvas presence.
+     * </p>
+     * <p>
+     *     See Facebook Graph API
+     *     <a href="https://developers.facebook.com/docs/graph-api/reference/user/invitable_friends">User invitable_friends</a>
+     *     guide for more details.
+     * </p>
+     *
+     * @param listener listener for getting list of current user friends
+     */
+    public void requestInvitableFriends(final OnRequestFriendsListener listener) {
+        super.requestFriends(listener);
+
+        if (!isConnected()) {
+            if (isRegistered(listener)) {
+                listener.onError(getId(), Request.FRIENDS, "Please login first", null);
+                cancelFriendsRequest();
+            }
+            return;
+        }
+
+        Bundle parameters = new Bundle();
+        parameters.putInt("limit", 5000);
+        parameters.putString("fields", "name, picture.width(480).height(480)");
+        GraphRequest request = new GraphRequest(getAccessToken(), "/me/invitable_friends", parameters, HttpMethod.GET, new GraphRequest.Callback() {
+            @Override
+            public void onCompleted(GraphResponse response) {
+                if (isRegistered(listener)) {
+                    if (response.getError() == null) {
+                        try {
+                            JSONArray persons = response.getJSONObject().getJSONArray("data");
+                            listener.onRequestFriendsSuccess(getId(), parsePersons(persons));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        listener.onError(getId(), Request.FRIENDS, response.getError().getErrorMessage(), null);
+                    }
+                    cancelFriendsRequest();
+                }
+            }
+        });
+        request.executeAsync();
     }
 
     private static FacebookPerson parsePerson(JSONObject person) {
         return GSON.fromJson(person.toString(), FacebookPerson.class);
+    }
+
+    private static List<SocialPerson> parsePersons(JSONArray persons) {
+        return GSON.fromJson(persons.toString(), new TypeToken<List<FacebookPerson>>(){}.getType());
     }
 }

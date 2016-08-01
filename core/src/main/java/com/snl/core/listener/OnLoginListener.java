@@ -22,21 +22,19 @@
  * SOFTWARE.
  */
 
-package com.snl.core.listener.base;
+package com.snl.core.listener;
 
-import com.snl.core.SocialNetwork;
+import com.snl.core.listener.base.SocialNetworkListener;
 
 /**
- * Base interface definition for a callback to be invoked when any social network request complete.
+ * Interface definition for a callback to be invoked when login complete.
  */
-public interface SocialNetworkListener {
+public interface OnLoginListener extends SocialNetworkListener {
+
     /**
-     * Called when social network request complete with error.
+     * Called when login complete.
      *
-     * @param socialNetworkId id of social network where request was complete with error
-     * @param request         request where occurred error
-     * @param errorMessage    error message where request was complete with error
-     * @param data            data of social network where request was complete with error
+     * @param socialNetworkId id of social network where request was complete
      */
-    void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data);
+    void onLoginSuccess(int socialNetworkId);
 }
