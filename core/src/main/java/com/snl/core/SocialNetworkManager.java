@@ -79,7 +79,7 @@ public class SocialNetworkManager {
     /**
      * Add social networks to manager
      *
-     * @param socialNetwork chosen and setuped social network
+     * @param socialNetwork chosen and setup social network
      */
     public void addSocialNetwork(SocialNetwork socialNetwork) {
         if (isExists(socialNetwork.getId())) {
