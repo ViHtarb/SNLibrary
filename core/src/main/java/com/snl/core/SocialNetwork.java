@@ -53,7 +53,7 @@ import java.util.Map;
  * Created by Viнt@rь on 28.11.2015
  * {@link T} it`s a access token template
  */
-public abstract class SocialNetwork<T> implements Application.ActivityLifecycleCallbacks {
+public abstract class SocialNetwork<T> {
 
     public enum Request {
         LOGIN,
@@ -108,51 +108,17 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
     protected Map<Request, SocialNetworkListener> mGlobalListeners = new HashMap<>();
     protected Map<Request, SocialNetworkListener> mLocalListeners = new HashMap<>();
 
+    protected ActivityLifecycleCallbacks mActivityLifecycleCallbacks = new ActivityLifecycleCallbacks();
+
     private Context mContext;
 
     public SocialNetwork(Application application) {
         mContext = application.getApplicationContext();
-        application.registerActivityLifecycleCallbacks(this);
+        application.registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
     }
 
     public Context getContext() {
         return mContext;
-    }
-
-    @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-
-    }
-
-    @Override
-    public void onActivityStarted(Activity activity) {
-
-    }
-
-    @Override
-    @CallSuper
-    public void onActivityResumed(Activity activity) {
-        mContext = activity;
-    }
-
-    @Override
-    public void onActivityPaused(Activity activity) {
-
-    }
-
-    @Override
-    public void onActivityStopped(Activity activity) {
-
-    }
-
-    @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-
-    }
-
-    @Override
-    public void onActivityDestroyed(Activity activity) {
-
     }
 
     /**
@@ -745,5 +711,43 @@ public abstract class SocialNetwork<T> implements Application.ActivityLifecycleC
      */
     public void setOnPostingDialogListener(OnPostingListener listener) {
         mGlobalListeners.put(Request.POST_DIALOG, listener);
+    }
+
+    private final class ActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
+
+        @Override
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+
+        }
+
+        @Override
+        public void onActivityStarted(Activity activity) {
+
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {
+            mContext = activity;
+        }
+
+        @Override
+        public void onActivityPaused(Activity activity) {
+
+        }
+
+        @Override
+        public void onActivityStopped(Activity activity) {
+
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+        }
+
+        @Override
+        public void onActivityDestroyed(Activity activity) {
+
+        }
     }
 }

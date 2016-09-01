@@ -44,21 +44,6 @@ public class SocialNetworkManager {
     }
 
     /**
-     * Get social network by id
-     *
-     * @param id Social network id
-     * @return Social network implementation extends {@link SocialNetwork}
-     * @throws SocialNetworkException
-     */
-    public SocialNetwork getSocialNetwork(int id) throws SocialNetworkException {
-        if (!isExists(id)) {
-            throw new SocialNetworkException("Social network with id = " + id + " not found");
-        }
-
-        return mSocialNetworks.get(id);
-    }
-
-    /**
      * Check is exists social network in manager by id
      *
      * @param id Social network id
@@ -76,6 +61,20 @@ public class SocialNetworkManager {
         return isExists(id);
     }
 
+    /**
+     * Get social network by id
+     *
+     * @param id Social network id
+     * @return Social network implementation extends {@link SocialNetwork}
+     * @throws SocialNetworkException
+     */
+    public SocialNetwork getSocialNetwork(int id) throws SocialNetworkException {
+        if (!isExists(id)) {
+            throw new SocialNetworkException("Social network with id = " + id + " not found");
+        }
+
+        return mSocialNetworks.get(id);
+    }
     /**
      * Add social networks to manager
      *
