@@ -161,8 +161,6 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             return;
         }
 
-        AccessToken.refreshCurrentAccessTokenAsync();
-
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id, name, link, email");
         GraphRequest request = GraphRequest.newMeRequest(getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
@@ -195,8 +193,6 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             return;
         }
 
-        AccessToken.refreshCurrentAccessTokenAsync();
-
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id, name, first_name, middle_name, last_name, link, email, gender, birthday, verified");
         GraphRequest request = GraphRequest.newMeRequest(getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
@@ -217,11 +213,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     /**
-     * Not supported via Facebook sdk.
-     *
-     * @param userId   user id in social network
-     * @param listener listener for request {@link com.snl.core.SocialPerson}
-     * @throws SocialNetworkException
+     * Not supported via Facebook SDK
      */
     @Override
     public void requestSocialPerson(String userId, OnRequestSocialPersonListener listener) {
@@ -229,11 +221,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     /**
-     * Not supported via Facebook sdk.
-     *
-     * @param userId   array of user ids in social network
-     * @param listener listener for request ArrayList of {@link com.snl.core.SocialPerson}
-     * @throws SocialNetworkException
+     * Not supported via Facebook SDK
      */
     @Override
     public void requestSocialPersons(String[] userId, OnRequestSocialPersonsListener listener) {
@@ -241,11 +229,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     /**
-     * Not supported via Facebook sdk.
-     *
-     * @param userId   user id in social network
-     * @param listener listener for request {@link FacebookPerson}
-     * @throws SocialNetworkException
+     * Not supported via Facebook SDK
      */
     @Override
     public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonListener listener) {
@@ -253,10 +237,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     /**
-     * Not supported via Facebook sdk
-     *
-     * @param userId   user id that should be checked as friend of current user
-     * @param listener listener for checking friend request
+     * Not supported via Facebook SDK
      */
     @Override
     public void requestCheckIsFriend(String userId, OnCheckIsFriendListener listener) {
@@ -274,8 +255,6 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             }
             return;
         }
-
-        AccessToken.refreshCurrentAccessTokenAsync();
 
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id, name, link, email");
@@ -297,7 +276,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     /**
-     * Get a list of friends that can be invited to install a Facebook game.
+     * Request a list of friends that can be invited to install a Facebook game
      *
      * <p>
      *     The Invitable Friends API is only available to apps classified as Games,
@@ -321,8 +300,6 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             }
             return;
         }
-
-        AccessToken.refreshCurrentAccessTokenAsync();
 
         Bundle parameters = new Bundle();
         parameters.putInt("limit", 5000);
@@ -348,11 +325,11 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
         request.executeAsync();
     }
 
-    private static FacebookPerson parsePerson(JSONObject person) {
+    private FacebookPerson parsePerson(JSONObject person) {
         return GSON.fromJson(person.toString(), FacebookPerson.class);
     }
 
-    private static List<SocialPerson> parsePersons(JSONArray persons) {
+    private List<SocialPerson> parsePersons(JSONArray persons) {
         return GSON.fromJson(persons.toString(), new TypeToken<List<FacebookPerson>>(){}.getType());
     }
 }

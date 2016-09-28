@@ -28,9 +28,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Viнt@rь on 28.11.2015
- * <p>Compatible FB permissions</p>
- * <p>The all FB permissions list is available in <a href="https://developers.facebook.com/docs/facebook-login/permissions/overview">documentation</a></p>
+ * <p>
+ *     Compatible FB permissions
+ * </p>
+ * <p>
+ *     The all FB permissions list is available in
+ *     <a href="https://developers.facebook.com/docs/facebook-login/permissions/overview">documentation</a>
+ * </p>
  */
 public final class FacebookPermissions {
 
@@ -44,7 +48,7 @@ public final class FacebookPermissions {
     }
 
     /**
-     * @return base permissions list, contains {@link #PUBLIC_PROFILE} {@link #EMAIL}
+     * @return base permissions list, contains {@link #PUBLIC_PROFILE} and {@link #EMAIL}
      */
     public static List<String> getPermissions() {
         List<String> permissions = new ArrayList<>();

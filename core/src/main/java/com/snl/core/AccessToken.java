@@ -25,13 +25,14 @@
 package com.snl.core;
 
 /**
- * Created by Viнt@rь on 28.11.2015
  * Universal access token wrapper
  */
 public class AccessToken {
-    //*** Access token string for social network*/
+
+    // Access token string for social network
     private String mToken;
-    //*** Access secret string for social network if present*/
+
+    // Access secret string for social network if present
     private String mSecret;
 
     public AccessToken(String token, String secret) {

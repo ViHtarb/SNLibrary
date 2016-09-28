@@ -32,7 +32,7 @@ import com.snl.core.SocialPerson;
 import java.io.Serializable;
 
 /**
- * Created by Viнt@rь on 28.11.2015
+ * Facebook {@link SocialPerson} implementation
  */
 public class FacebookPerson implements SocialPerson {
 
@@ -56,7 +56,7 @@ public class FacebookPerson implements SocialPerson {
     private String mProfileURL; // Profile URL of social person from social network.
 
     @SerializedName("photo")
-    private String mAvatarURL;
+    private String mAvatarURL; // Avatar URL of social person from social network.
 
     @SerializedName("email")
     private String mEmail; // Email of social person from social network if exist.

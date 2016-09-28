@@ -30,8 +30,9 @@ import com.snl.core.SocialNetwork;
  * Base interface definition for a callback to be invoked when any social network request complete.
  */
 public interface SocialNetworkListener {
+
     /**
-     * Called when social network request complete with error.
+     * Called when {@link SocialNetwork} request complete with error.
      *
      * @param socialNetworkId id of social network where request was complete with error
      * @param request         request where occurred error
