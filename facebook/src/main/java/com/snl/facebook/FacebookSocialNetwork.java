@@ -28,6 +28,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -55,6 +57,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -66,9 +69,9 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     private LoginManager mLoginManager;
     private CallbackManager mCallbackManager;
 
-    private List<String> mPermissions;
+    private Collection<String> mPermissions;
 
-    public FacebookSocialNetwork(Application application, List<String> permissions) {
+    public FacebookSocialNetwork(@NonNull Application application, @Nullable Collection<String> permissions) {
         super(application);
         String applicationId = Utility.getMetadataApplicationId(application);
 
@@ -158,6 +161,8 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             return;
         }
 
+        AccessToken.refreshCurrentAccessTokenAsync();
+
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id, name, link, email");
         GraphRequest request = GraphRequest.newMeRequest(getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
@@ -189,6 +194,8 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             }
             return;
         }
+
+        AccessToken.refreshCurrentAccessTokenAsync();
 
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id, name, first_name, middle_name, last_name, link, email, gender, birthday, verified");
@@ -268,6 +275,8 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             return;
         }
 
+        AccessToken.refreshCurrentAccessTokenAsync();
+
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id, name, link, email");
         GraphRequest request = GraphRequest.newMyFriendsRequest(getAccessToken(), new GraphRequest.GraphJSONArrayCallback() {
@@ -312,6 +321,8 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             }
             return;
         }
+
+        AccessToken.refreshCurrentAccessTokenAsync();
 
         Bundle parameters = new Bundle();
         parameters.putInt("limit", 5000);
