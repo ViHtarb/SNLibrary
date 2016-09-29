@@ -44,20 +44,20 @@ public class SocialNetworkManager {
     }
 
     /**
-     * Check is SocialNetwork registered
+     * Check is {@link SocialNetwork} registered
      *
-     * @param socialNetwork checking SocialNetwork
-     * @return Is SocialNetwork registered
+     * @param socialNetwork checking {@link SocialNetwork}
+     * @return Is {@link SocialNetwork} registered
      */
     public boolean isRegistered(SocialNetwork socialNetwork) {
         return isRegistered(socialNetwork.getId());
     }
 
     /**
-     * Check is SocialNetwork registered
+     * Check is {@link SocialNetwork} registered
      *
-     * @param id SocialNetwork id
-     * @return Is SocialNetwork registered
+     * @param id {@link SocialNetwork} id
+     * @return Is {@link SocialNetwork} registered
      */
     public boolean isRegistered(int id) {
         return mSocialNetworks.get(id) != null;
@@ -72,11 +72,10 @@ public class SocialNetworkManager {
     }
 
     /**
-     * Get SocialNetwork from manager
+     * Get {@link SocialNetwork} from manager
      *
-     * @param id SocialNetwork id
+     * @param id {@link SocialNetwork} id
      * @return {@link SocialNetwork}
-     * @throws SocialNetworkException
      */
     public SocialNetwork get(int id) {
         if (!isRegistered(id)) {
@@ -94,9 +93,9 @@ public class SocialNetworkManager {
     }
 
     /**
-     * Register SocialNetwork in manager
+     * Register {@link SocialNetwork} in manager
      *
-     * @param socialNetwork chosen and setup social network
+     * @param socialNetwork chosen and setup {@link SocialNetwork}
      */
     public void register(SocialNetwork socialNetwork) {
         if (isRegistered(socialNetwork)) {
@@ -114,7 +113,7 @@ public class SocialNetworkManager {
     }
 
     /**
-     * Logout from all registered SocialNetwork`s
+     * Logout from all registered {@link SocialNetwork}`s
      */
     public void logout() {
         for (int i = 0; i < mSocialNetworks.size(); i++) {

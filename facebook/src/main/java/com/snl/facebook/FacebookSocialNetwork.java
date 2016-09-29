@@ -66,10 +66,10 @@ import java.util.List;
 public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     public static final int ID = 1;
 
-    private LoginManager mLoginManager;
-    private CallbackManager mCallbackManager;
+    private final LoginManager mLoginManager;
+    private final CallbackManager mCallbackManager;
 
-    private Collection<String> mPermissions;
+    private final Collection<String> mPermissions;
 
     public FacebookSocialNetwork(@NonNull Application application, @Nullable Collection<String> permissions) {
         super(application);
@@ -104,7 +104,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
 
     @Override
     public boolean isConnected() {
-        return getAccessToken() != null;
+        return getAccessToken() != null && !getAccessToken().isExpired();
     }
 
     @Override
