@@ -54,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (!mSocialNetworkManager.isExists(FacebookSocialNetwork.ID)) {
+        if (!mSocialNetworkManager.isRegistered(FacebookSocialNetwork.ID)) {
             List<String> permissions = FacebookPermissions.getPermissions();
             permissions.add(FacebookPermissions.USER_FRIENDS);
-            mSocialNetworkManager.addSocialNetwork(new FacebookSocialNetwork(getApplication(), permissions));
+            mSocialNetworkManager.register(new FacebookSocialNetwork(getApplication(), permissions));
         }
 
         Button button = (Button) findViewById(R.id.fb_button);
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final SocialNetwork socialNetwork = mSocialNetworkManager.getSocialNetwork(FacebookSocialNetwork.ID);
+                final SocialNetwork socialNetwork = mSocialNetworkManager.get(FacebookSocialNetwork.ID);
                 if (socialNetwork.isConnected()) {
                     //socialNetwork.logout();
                     socialNetwork.requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonListener<FacebookPerson>() {

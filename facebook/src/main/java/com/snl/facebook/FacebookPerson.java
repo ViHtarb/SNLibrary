@@ -150,7 +150,7 @@ public class FacebookPerson implements SocialPerson {
 
     @Override
     public String getAvatarURL() {
-        return mAvatar != null ? mAvatar.getURL() : mAvatarURL != null ? mAvatarURL : "http://graph.facebook.com/" + mId + "/picture?type=large";
+        return mId != null ? "http://graph.facebook.com/" + mId + "/picture?type=large" : mAvatar != null ? mAvatar.getURL() : mAvatarURL;
     }
 
     @Override

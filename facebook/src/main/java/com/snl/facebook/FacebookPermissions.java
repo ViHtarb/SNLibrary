@@ -35,6 +35,8 @@ import java.util.List;
  *     The all FB permissions list is available in
  *     <a href="https://developers.facebook.com/docs/facebook-login/permissions/overview">documentation</a>
  * </p>
+ *
+ * // TODO implement FacebookPermission class
  */
 public final class FacebookPermissions {
 
@@ -48,12 +50,13 @@ public final class FacebookPermissions {
     }
 
     /**
-     * @return base permissions list, contains {@link #PUBLIC_PROFILE} and {@link #EMAIL}
+     * @return base permissions list, contains {@link #PUBLIC_PROFILE}, {@link #EMAIL}, {@link #USER_FRIENDS}
      */
     public static List<String> getPermissions() {
         List<String> permissions = new ArrayList<>();
         permissions.add(PUBLIC_PROFILE);
         permissions.add(EMAIL);
+        permissions.add(USER_FRIENDS);
         return permissions;
     }
 }

@@ -25,6 +25,7 @@
 package com.snl.core;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 /**
@@ -41,6 +42,16 @@ public class SocialNetworkManager {
 
     private SocialNetworkManager() {
         // not instantiate
+    }
+
+    /**
+     * Check is {@link SocialNetwork} connected
+     *
+     * @param id {@link SocialNetwork} id
+     * @return Is {@link SocialNetwork} connected
+     */
+    public boolean isConnected(int id) {
+        return get(id).isConnected();
     }
 
     /**
@@ -64,14 +75,6 @@ public class SocialNetworkManager {
     }
 
     /**
-     * @deprecated Use {@link #isRegistered(int)} instead.
-     */
-    @Deprecated
-    public boolean isExists(int id) {
-        return isRegistered(id);
-    }
-
-    /**
      * Get {@link SocialNetwork} from manager
      *
      * @param id {@link SocialNetwork} id
@@ -85,31 +88,24 @@ public class SocialNetworkManager {
     }
 
     /**
-     * @deprecated Use {@link #get(int)} instead.
-     */
-    @Deprecated
-    public SocialNetwork getSocialNetwork(int id) {
-        return get(id);
-    }
-
-    /**
      * Register {@link SocialNetwork} in manager
      *
      * @param socialNetwork chosen and setup {@link SocialNetwork}
      */
-    public void register(SocialNetwork socialNetwork) {
+    public void register(@NonNull SocialNetwork socialNetwork) {
         if (isRegistered(socialNetwork)) {
-            throw new SocialNetworkException("SocialNetwork with id = " + socialNetwork.getId() + " already registered");
+            throw new SocialNetworkException("SocialNetwork " + socialNetwork.getClass().getName() + "is already registered");
         }
         mSocialNetworks.put(socialNetwork.getId(), socialNetwork);
     }
 
     /**
-     * @deprecated Use {@link #register(SocialNetwork)} instead.
+     * Logout from {@link SocialNetwork} by id
+     *
+     * @param id {@link SocialNetwork} id
      */
-    @Deprecated
-    public void addSocialNetwork(SocialNetwork socialNetwork) {
-        register(socialNetwork);
+    public void logout(int id) {
+        get(id).logout();
     }
 
     /**
