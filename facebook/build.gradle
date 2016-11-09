@@ -29,5 +29,5 @@ dependencies {
     })
     testCompile 'junit:junit:' + rootProject.ext.junitVersion
     compile project(':core')
-    compile 'com.facebook.android:facebook-android-sdk:4.16.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.17.0'
 }
