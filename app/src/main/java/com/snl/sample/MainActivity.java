@@ -47,17 +47,16 @@ import java.util.List;
  * Created by Viнt@rь on 28.11.2015
  */
 public class MainActivity extends AppCompatActivity {
-    private SocialNetworkManager mSocialNetworkManager = SocialNetworkManager.getInstance();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (!mSocialNetworkManager.isRegistered(FacebookSocialNetwork.ID)) {
+        if (!SocialNetworkManager.isRegistered(FacebookSocialNetwork.ID)) {
             List<String> permissions = FacebookPermissions.getPermissions();
             permissions.add(FacebookPermissions.USER_FRIENDS);
-            mSocialNetworkManager.register(new FacebookSocialNetwork(getApplication(), permissions));
+            SocialNetworkManager.register(new FacebookSocialNetwork(getApplication(), permissions));
         }
 
         Button button = (Button) findViewById(R.id.fb_button);
@@ -65,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final SocialNetwork socialNetwork = mSocialNetworkManager.get(FacebookSocialNetwork.ID);
+                final SocialNetwork socialNetwork = SocialNetworkManager.get(FacebookSocialNetwork.ID);
                 if (socialNetwork.isConnected()) {
                     //socialNetwork.logout();
                     socialNetwork.requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonListener<FacebookPerson>() {
@@ -141,6 +140,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mSocialNetworkManager.onActivityResult(requestCode, resultCode, data);
+        SocialNetworkManager.onActivityResult(requestCode, resultCode, data);
     }
 }
