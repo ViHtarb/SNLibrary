@@ -35,13 +35,14 @@ import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.model.VKAttachments;
 
 import java.util.List;
 
 /**
  * Created by Viнt@rь on 13.04.2016
  */
-public class VKSocialNetwork extends SocialNetwork<VKAccessToken> {
+public class VKSocialNetwork extends SocialNetwork<VKAccessToken, VKAttachments> {
     public static final int ID = 2;
 
     private List<String> mPermissions;

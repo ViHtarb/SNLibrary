@@ -42,12 +42,17 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.internal.Utility;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.share.ShareApi;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareContent;
+import com.facebook.share.widget.ShareDialog;
 import com.google.gson.reflect.TypeToken;
 import com.snl.core.SocialNetwork;
 import com.snl.core.SocialNetworkException;
 import com.snl.core.SocialPerson;
 import com.snl.core.listener.OnCheckIsFriendListener;
 import com.snl.core.listener.OnLoginListener;
+import com.snl.core.listener.OnShareListener;
 import com.snl.core.listener.OnRequestDetailedSocialPersonListener;
 import com.snl.core.listener.OnRequestFriendsListener;
 import com.snl.core.listener.OnRequestSocialPersonListener;
@@ -58,12 +63,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import static com.snl.facebook.FacebookPermissions.PUBLISH_ACTIONS;
 
 /**
  * Created by Viнt@rь on 28.11.2015
  */
-public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
+public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareContent> {
     public static final int ID = 1;
 
     private final LoginManager mLoginManager;
@@ -323,6 +331,74 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
             }
         });
         request.executeAsync();
+    }
+
+    @Override
+    public void requestShareContent(ShareContent shareContent, OnShareListener listener) {
+        super.requestShareContent(shareContent, listener);
+        performShareContent(shareContent, listener, Request.SHARE_CONTENT);
+    }
+
+    private void performShareContent(final ShareContent shareContent, final OnShareListener listener, final Request request) {
+        if (FacebookPermissions.isPermissionGranted(PUBLISH_ACTIONS)) {
+            FacebookCallback<Sharer.Result> facebookCallback = new FacebookCallback<Sharer.Result>() {
+                @Override
+                public void onSuccess(Sharer.Result result) {
+                    if (isRegistered(listener)) {
+                        listener.onShareSuccess(getId());
+                        cancelRequest(request);
+                    }
+                }
+
+                @Override
+                public void onCancel() {
+                    if (isRegistered(request)) {
+                        listener.onError(getId(), request, null, null);
+                        cancelRequest(request);
+                    }
+                }
+
+                @Override
+                public void onError(FacebookException error) {
+                    if (isRegistered(request)) {
+                        listener.onError(getId(), request, error.getMessage(), null);
+                        cancelRequest(request);
+                    }
+                }
+            };
+
+            if (ShareDialog.canShow(shareContent.getClass())) {
+                ShareDialog shareDialog = new ShareDialog(getContext());
+                shareDialog.registerCallback(mCallbackManager, facebookCallback);
+                shareDialog.show(shareContent);
+            } else {
+                ShareApi.share(shareContent, facebookCallback);
+            }
+        } else {
+            mLoginManager.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
+                    performShareContent(shareContent, listener, request);
+                }
+
+                @Override
+                public void onCancel() {
+                    if (isRegistered(request)) {
+                        listener.onError(getId(), request, null, null);
+                        cancelRequest(request);
+                    }
+                }
+
+                @Override
+                public void onError(FacebookException error) {
+                    if (isRegistered(request)) {
+                        listener.onError(getId(), request, error.getMessage(), null);
+                        cancelRequest(request);
+                    }
+                }
+            });
+            mLoginManager.logInWithPublishPermissions(getContext(), Collections.singleton(PUBLISH_ACTIONS));
+        }
     }
 
     private FacebookPerson parsePerson(JSONObject person) {

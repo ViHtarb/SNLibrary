@@ -25,13 +25,16 @@
 package com.snl.sample;
 
 import android.content.Intent;
+import android.hardware.camera2.params.Face;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.facebook.login.LoginManager;
 import com.snl.core.SocialNetwork;
 import com.snl.core.SocialNetworkManager;
 import com.snl.core.SocialPerson;
@@ -41,7 +44,9 @@ import com.snl.facebook.FacebookPermissions;
 import com.snl.facebook.FacebookPerson;
 import com.snl.facebook.FacebookSocialNetwork;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Viнt@rь on 28.11.2015
@@ -54,9 +59,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (!SocialNetworkManager.isRegistered(FacebookSocialNetwork.ID)) {
-            List<String> permissions = FacebookPermissions.getPermissions();
-            permissions.add(FacebookPermissions.USER_FRIENDS);
-            SocialNetworkManager.register(new FacebookSocialNetwork(getApplication(), permissions));
+   /*         Set<String> permissions = FacebookPermissions.getPermissions();
+            permissions.add(FacebookPermissions.PUBLISH_ACTIONS);*/
+
+            SocialNetworkManager.register(new FacebookSocialNetwork(getApplication(), FacebookPermissions.getPermissions()));
         }
 
         Button button = (Button) findViewById(R.id.fb_button);
@@ -66,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final SocialNetwork socialNetwork = SocialNetworkManager.get(FacebookSocialNetwork.ID);
                 if (socialNetwork.isConnected()) {
-                    //socialNetwork.logout();
-                    socialNetwork.requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonListener<FacebookPerson>() {
+                    socialNetwork.logout();
+/*                    socialNetwork.requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonListener<FacebookPerson>() {
                         @Override
                         public void onRequestDetailedSocialPersonSuccess(int socialNetworkID, FacebookPerson socialPerson) {
                             Log.d("TEST", "onRequestDetailedSocialPersonSuccess");
@@ -78,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onError(int socialNetworkID, SocialNetwork.Request request, String errorMessage, Object data) {
 
                         }
-                    });
+                    });*/
 
  /*                   if (socialNetwork instanceof FacebookSocialNetwork) {
                         ((FacebookSocialNetwork) socialNetwork).requestInvitableFriends(new OnRequestFriendsListener() {
@@ -113,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                 socialNetwork.requestLogin(new OnLoginListener() {
                     @Override
                     public void onLoginSuccess(int socialNetworkID) {
-                        Log.d("TEST", "onLoginSuccess");
+/*                        Log.d("TEST", "onLoginSuccess");
                         socialNetwork.requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonListener() {
                             @Override
                             public void onRequestDetailedSocialPersonSuccess(int socialNetworkID, SocialPerson socialPerson) {
@@ -125,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onError(int socialNetworkID, SocialNetwork.Request request, String errorMessage, Object data) {
 
                             }
-                        });
+                        });*/
                     }
 
                     @Override

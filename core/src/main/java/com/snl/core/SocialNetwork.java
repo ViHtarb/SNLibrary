@@ -28,14 +28,14 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
+import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.snl.core.listener.OnCheckIsFriendListener;
 import com.snl.core.listener.OnLoginListener;
-import com.snl.core.listener.OnPostingListener;
+import com.snl.core.listener.OnShareListener;
 import com.snl.core.listener.OnRequestAccessTokenListener;
 import com.snl.core.listener.OnRequestAddFriendListener;
 import com.snl.core.listener.OnRequestDetailedSocialPersonListener;
@@ -51,12 +51,8 @@ import java.util.Map;
 
 /**
  * Abstract implementation of <code>SocialNetwork</code>
- *
- * <p>
- *     The {@link T} it`s a <code>AccessToken</code>
- * </p>
  */
-public abstract class SocialNetwork<T> {
+public abstract class SocialNetwork<AccessToken, ShareContent> {
 
     public enum Request {
         LOGIN,
@@ -67,17 +63,18 @@ public abstract class SocialNetwork<T> {
         SOCIAL_PERSON,
         DETAIL_SOCIAL_PERSON,
         SOCIAL_PERSONS,
-        POST_MESSAGE,
-        POST_PHOTO,
-        POST_LINK,
-        POST_DIALOG,
+        SHARE_CONTENT,
+        //SHARE_MESSAGE,
+        //SHARE_PHOTO,
+        //SHARE_LINK,
+        //SHARE_DIALOG,
         CHECK_IS_FRIEND,
         FRIENDS,
         ADD_FRIEND,
         REMOVE_FRIEND
     }
 
-    // Share bundle constant for message
+/*    // Share bundle constant for message
     public static final String BUNDLE_MESSAGE = "message";
 
     // Share bundle constant for link
@@ -96,7 +93,7 @@ public abstract class SocialNetwork<T> {
     public static final String BUNDLE_CAPTION = "caption";
 
     // Share bundle constant for picture
-    public static final String BUNDLE_PICTURE = "picture";
+    public static final String BUNDLE_PICTURE = "picture";*/
 
     protected static final Gson GSON = new Gson();
 
@@ -145,7 +142,7 @@ public abstract class SocialNetwork<T> {
      *
      * @return access token
      */
-    public abstract T getAccessToken();
+    public abstract AccessToken getAccessToken();
 
     /**
      * Logout from <code>SocialNetwork</code>
@@ -341,185 +338,235 @@ public abstract class SocialNetwork<T> {
     }
 
     /**
-     * Post message to <code>SocialNetwork</code>
+     * Share custom content to <code>SocialNetwork</code>
      *
-     * @param message message that should be shared
+     * @param shareContent content that should be shared
      */
-    public void requestPostMessage(String message) {
-        requestPostMessage(message, null);
+    public void requestShareContent(ShareContent shareContent) {
+        registerListener(Request.SHARE_CONTENT, null);
     }
 
     /**
+     * Share custom content to <code>SocialNetwork</code>
+     *
+     * @param shareContent content that should be shared
+     */
+    public void requestShareContent(ShareContent shareContent, OnShareListener listener) {
+        registerListener(Request.SHARE_CONTENT, listener);
+    }
+/*
+
+    */
+/**
      * Post message to <code>SocialNetwork</code>
      *
      * @param message message that should be shared
-     */
-    public void requestPostMessage(String message, OnPostingListener listener) {
-        registerListener(Request.POST_MESSAGE, listener);
+     *//*
+
+    public void requestShareMessage(String message) {
+        requestShareMessage(message, null);
     }
 
-    /**
+    */
+/**
+     * Post message to <code>SocialNetwork</code>
+     *
+     * @param message message that should be shared
+     *//*
+
+    public void requestShareMessage(String message, OnShareListener listener) {
+        registerListener(Request.SHARE_MESSAGE, listener);
+    }
+
+    */
+/**
      * Post photo to <code>SocialNetwork</code>
      *
      * @param photo photo that should be shared
      * @param message message that should be shared with photo
-     */
-    public void requestPostPhoto(File photo, String message) {
-        requestPostPhoto(photo, message, null);
+     *//*
+
+    public void requestSharePhoto(File photo, String message) {
+        requestSharePhoto(photo, message, null);
     }
 
-    /**
+    */
+/**
      * Post photo to <code>SocialNetwork</code>
      *
      * @param photo photo that should be shared
      * @param message message that should be shared with photo
-     */
-    public void requestPostPhoto(File photo, String message, OnPostingListener listener) {
-        registerListener(Request.POST_PHOTO, listener);
+     *//*
+
+    public void requestSharePhoto(File photo, String message, OnShareListener listener) {
+        registerListener(Request.SHARE_PHOTO, listener);
     }
 
-    /**
-     * Request Share dialog of <code>SocialNetwork</code>
-     *
-     * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
-     */
-    public void requestPostDialog(Bundle bundle) {
-        requestPostDialog(bundle, null);
-    }
-
-    /**
-     * Request Share dialog of <code>SocialNetwork</code>
-     *
-     * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
-     */
-    public void requestPostDialog(Bundle bundle, OnPostingListener listener) {
-        registerListener(Request.POST_DIALOG, listener);
-    }
-
-    /**
+    */
+/**
      * Post link with comment to <code>SocialNetwork</code>
      *
      * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
      * @param message message that should be shared with bundle
-     */
-    public void requestPostLink(Bundle bundle, String message) {
-        requestPostLink(bundle, message, null);
+     *//*
+
+    public void requestShareLink(Bundle bundle, String message) {
+        requestShareLink(bundle, message, null);
     }
 
-    /**
+    */
+/**
      * Post link with comment to <code>SocialNetwork</code>
      *
      * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
      * @param message message that should be shared with bundle
-     */
-    public void requestPostLink(Bundle bundle, String message, OnPostingListener listener) {
-        registerListener(Request.POST_LINK, listener);
+     *//*
+
+    public void requestShareLink(Bundle bundle, String message, OnShareListener listener) {
+        registerListener(Request.SHARE_LINK, listener);
     }
+
+    */
+/**
+     * Request Share dialog of <code>SocialNetwork</code>
+     *
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
+     *//*
+
+    public void requestShareDialog(Bundle bundle) {
+        requestShareDialog(bundle, null);
+    }
+
+    */
+/**
+     * Request Share dialog of <code>SocialNetwork</code>
+     *
+     * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
+     *//*
+
+    public void requestShareDialog(Bundle bundle, OnShareListener listener) {
+        registerListener(Request.SHARE_DIALOG, listener);
+    }
+*/
 
     /**
      * Cancel {@link Request#LOGIN} request
      */
     public void cancelLoginRequest() {
-        mLocalListeners.remove(Request.LOGIN);
+        cancelRequest(Request.LOGIN);
     }
 
     /**
      * Cancel {@link Request#ACCESS_TOKEN} request
      */
     public void cancelAccessTokenRequest() {
-        mLocalListeners.remove(Request.ACCESS_TOKEN);
+        cancelRequest(Request.ACCESS_TOKEN);
     }
 
     /**
      * Cancel {@link Request#PERSON} request
      */
     public void cancelCurrentPersonRequest() {
-        mLocalListeners.remove(Request.PERSON);
+        cancelRequest(Request.PERSON);
     }
 
     /**
      * Cancel {@link Request#DETAIL_PERSON} request
      */
     public void cancelDetailedCurrentPersonRequest() {
-        mLocalListeners.remove(Request.DETAIL_PERSON);
+        cancelRequest(Request.DETAIL_PERSON);
     }
 
     /**
      * Cancel {@link Request#SOCIAL_PERSON} request
      */
     public void cancelSocialPersonRequest() {
-        mLocalListeners.remove(Request.SOCIAL_PERSON);
+        cancelRequest(Request.SOCIAL_PERSON);
     }
 
     /**
      * Cancel {@link Request#SOCIAL_PERSONS} request
      */
     public void cancelSocialPersonsRequest() {
-        mLocalListeners.remove(Request.SOCIAL_PERSONS);
+        cancelRequest(Request.SOCIAL_PERSONS);
     }
 
     /**
      * Cancel {@link Request#DETAIL_SOCIAL_PERSON} request
      */
     public void cancelDetailedSocialPersonRequest() {
-        mLocalListeners.remove(Request.DETAIL_SOCIAL_PERSON);
+        cancelRequest(Request.DETAIL_SOCIAL_PERSON);
     }
 
     /**
      * Cancel {@link Request#CHECK_IS_FRIEND} request
      */
     public void cancelCheckIsFriendRequest() {
-        mLocalListeners.remove(Request.CHECK_IS_FRIEND);
+        cancelRequest(Request.CHECK_IS_FRIEND);
     }
 
     /**
      * Cancel {@link Request#FRIENDS} request
      */
     public void cancelFriendsRequest() {
-        mLocalListeners.remove(Request.FRIENDS);
+        cancelRequest(Request.FRIENDS);
     }
 
     /**
      * Cancel {@link Request#ADD_FRIEND} request
      */
     public void cancelAddFriendRequest() {
-        mLocalListeners.remove(Request.ADD_FRIEND);
+        cancelRequest(Request.ADD_FRIEND);
     }
 
     /**
      * Cancel {@link Request#REMOVE_FRIEND} request
      */
     public void cancelRemoveFriendRequest() {
-        mLocalListeners.remove(Request.REMOVE_FRIEND);
+        cancelRequest(Request.REMOVE_FRIEND);
     }
 
-    /**
-     * Cancel {@link Request#POST_MESSAGE} request
-     */
-    public void cancelPostMessageRequest() {
-        mLocalListeners.remove(Request.POST_MESSAGE);
+    public void cancelShareContentRequest() {
+        cancelRequest(Request.SHARE_CONTENT);
+    }
+/*
+
+    */
+/**
+     * Cancel {@link Request#SHARE_MESSAGE} request
+     *//*
+
+    public void cancelShareMessageRequest() {
+        cancelRequest(Request.SHARE_MESSAGE);
     }
 
-    /**
-     * Cancel {@link Request#POST_PHOTO} request
-     */
-    public void cancelPostPhotoRequest() {
-        mLocalListeners.remove(Request.POST_PHOTO);
+    */
+/**
+     * Cancel {@link Request#SHARE_PHOTO} request
+     *//*
+
+    public void cancelSharePhotoRequest() {
+        cancelRequest(Request.SHARE_PHOTO);
     }
 
-    /**
-     * Cancel {@link Request#POST_LINK} request
-     */
-    public void cancelPostLinkRequest() {
-        mLocalListeners.remove(Request.POST_LINK);
+    */
+/**
+     * Cancel {@link Request#SHARE_LINK} request
+     *//*
+
+    public void cancelShareLinkRequest() {
+        cancelRequest(Request.SHARE_LINK);
     }
 
-    /**
-     * Cancel {@link Request#POST_DIALOG} request
-     */
-    public void cancelPostDialogRequest() {
-        mLocalListeners.remove(Request.POST_DIALOG);
+    */
+/**
+     * Cancel {@link Request#SHARE_DIALOG} request
+     *//*
+
+    public void cancelShareDialogRequest() {
+        cancelRequest(Request.SHARE_DIALOG);
     }
+*/
 
     /**
      * Cancel all {@link Request}`s
@@ -562,6 +609,14 @@ public abstract class SocialNetwork<T> {
         } else {
             mLocalListeners.put(request, mGlobalListeners.get(request));
         }
+    }
+
+    /**
+     * Cancel {@link Request}
+     * @param request to be canceled
+     */
+    protected void cancelRequest(@NonNull Request request) {
+        mLocalListeners.remove(request);
     }
 
     //////////////////// SETTERS FOR GLOBAL LISTENERS ////////////////////
@@ -667,51 +722,58 @@ public abstract class SocialNetwork<T> {
     }
 
     /**
-     * Register a callback to be invoked when {@link #requestPostMessage(String)} complete.
+     * Register a callback to be invoked when {@link #requestShareContent(ShareContent)}} complete.
      *
      * @param listener the callback that will run
      */
-    public void setOnPostingMessageListener(OnPostingListener listener) {
-        mGlobalListeners.put(Request.POST_MESSAGE, listener);
+    public void setOnShareContentListener(OnShareListener listener) {
+        mGlobalListeners.put(Request.SHARE_CONTENT, listener);
     }
 
-    /**
-     * Register a callback to be invoked when {@link #requestPostPhoto(File, String)} complete.
+ /*   *//**
+     * Register a callback to be invoked when {@link #requestShareMessage(String)} complete.
      *
      * @param listener the callback that will run
-     */
-    public void setOnPostingPhotoListener(OnPostingListener listener) {
-        mGlobalListeners.put(Request.POST_PHOTO, listener);
+     *//*
+    public void setOnShareMessageListener(OnShareListener listener) {
+        mGlobalListeners.put(Request.SHARE_MESSAGE, listener);
     }
 
-    /**
-     * Register a callback to be invoked when {@link #requestPostLink(Bundle, String)} complete.
+    *//**
+     * Register a callback to be invoked when {@link #requestSharePhoto(File, String)} complete.
      *
      * @param listener the callback that will run
-     */
-    public void setOnPostingLinkListener(OnPostingListener listener) {
-        mGlobalListeners.put(Request.POST_LINK, listener);
+     *//*
+    public void setOnSharePhotoListener(OnShareListener listener) {
+        mGlobalListeners.put(Request.SHARE_PHOTO, listener);
     }
 
-    /**
-     * Register a callback to be invoked when {@link #requestPostDialog(Bundle)} complete.
+    *//**
+     * Register a callback to be invoked when {@link #requestShareLink(Bundle, String)} complete.
      *
      * @param listener the callback that will run
-     */
-    public void setOnPostingDialogListener(OnPostingListener listener) {
-        mGlobalListeners.put(Request.POST_DIALOG, listener);
+     *//*
+    public void setOnShareLinkListener(OnShareListener listener) {
+        mGlobalListeners.put(Request.SHARE_LINK, listener);
     }
+
+    *//**
+     * Register a callback to be invoked when {@link #requestShareDialog(Bundle)} complete.
+     *
+     * @param listener the callback that will run
+     *//*
+    public void setOnShareDialogListener(OnShareListener listener) {
+        mGlobalListeners.put(Request.SHARE_DIALOG, listener);
+    }*/
 
     private final class ActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
 
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-
         }
 
         @Override
         public void onActivityStarted(Activity activity) {
-
         }
 
         @Override

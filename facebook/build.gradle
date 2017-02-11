@@ -29,5 +29,7 @@ dependencies {
     })
     testCompile 'junit:junit:' + rootProject.ext.junitVersion
     compile project(':core')
-    compile 'com.facebook.android:facebook-android-sdk:4.17.0'
+    compile 'com.android.support:customtabs:' + rootProject.ext.supportLibraryVersion // FOR FUCKING FACEBOOK SDK
+    compile 'com.android.support:cardview-v7:' + rootProject.ext.supportLibraryVersion // FOR FUCKING FACEBOOK SDK
+    compile 'com.facebook.android:facebook-android-sdk:4.19.0'
 }
