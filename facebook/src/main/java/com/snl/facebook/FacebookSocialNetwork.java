@@ -336,33 +336,42 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
     @Override
     public void requestShareContent(ShareContent shareContent, OnShareListener listener) {
         super.requestShareContent(shareContent, listener);
-        performShareContent(shareContent, listener, Request.SHARE_CONTENT);
+
+        if (!isConnected()) {
+            if (isRegistered(listener)) {
+                listener.onError(getId(), Request.SHARE_CONTENT, "Please login first", null);
+                cancelShareContentRequest();
+            }
+            return;
+        }
+
+        performShareContent(shareContent, listener);
     }
 
-    private void performShareContent(final ShareContent shareContent, final OnShareListener listener, final Request request) {
+    private void performShareContent(final ShareContent shareContent, final OnShareListener listener) {
         if (FacebookPermissions.isPermissionGranted(PUBLISH_ACTIONS)) {
             FacebookCallback<Sharer.Result> facebookCallback = new FacebookCallback<Sharer.Result>() {
                 @Override
                 public void onSuccess(Sharer.Result result) {
                     if (isRegistered(listener)) {
                         listener.onShareSuccess(getId());
-                        cancelRequest(request);
+                        cancelShareContentRequest();
                     }
                 }
 
                 @Override
                 public void onCancel() {
-                    if (isRegistered(request)) {
-                        listener.onError(getId(), request, null, null);
-                        cancelRequest(request);
+                    if (isRegistered(listener)) {
+                        listener.onError(getId(), Request.SHARE_CONTENT, null, null);
+                        cancelShareContentRequest();
                     }
                 }
 
                 @Override
                 public void onError(FacebookException error) {
-                    if (isRegistered(request)) {
-                        listener.onError(getId(), request, error.getMessage(), null);
-                        cancelRequest(request);
+                    if (isRegistered(listener)) {
+                        listener.onError(getId(), Request.SHARE_CONTENT, error.getMessage(), null);
+                        cancelShareContentRequest();
                     }
                 }
             };
@@ -378,22 +387,22 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
             mLoginManager.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
-                    performShareContent(shareContent, listener, request);
+                    performShareContent(shareContent, listener);
                 }
 
                 @Override
                 public void onCancel() {
-                    if (isRegistered(request)) {
-                        listener.onError(getId(), request, null, null);
-                        cancelRequest(request);
+                    if (isRegistered(listener)) {
+                        listener.onError(getId(), Request.SHARE_CONTENT, null, null);
+                        cancelShareContentRequest();
                     }
                 }
 
                 @Override
                 public void onError(FacebookException error) {
-                    if (isRegistered(request)) {
-                        listener.onError(getId(), request, error.getMessage(), null);
-                        cancelRequest(request);
+                    if (isRegistered(listener)) {
+                        listener.onError(getId(), Request.SHARE_CONTENT, error.getMessage(), null);
+                        cancelShareContentRequest();
                     }
                 }
             });
