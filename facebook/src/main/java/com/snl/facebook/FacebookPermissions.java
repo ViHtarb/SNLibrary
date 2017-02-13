@@ -24,18 +24,8 @@
 
 package com.snl.facebook;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.RestrictTo;
-import android.support.annotation.StringDef;
-
-import com.facebook.AccessToken;
-
-import java.lang.annotation.Retention;
 import java.util.HashSet;
 import java.util.Set;
-
-import static android.support.annotation.RestrictTo.Scope.LIBRARY;
-import static android.support.annotation.RestrictTo.Scope.SUBCLASSES;
 
 /**
  * <p>
@@ -52,9 +42,6 @@ public final class FacebookPermissions {
     public static final String EMAIL = "email";
     public static final String USER_FRIENDS = "user_friends";
 
-    @RestrictTo(SUBCLASSES)
-    static final String PUBLISH_ACTIONS = "publish_actions";
-
     private FacebookPermissions() {
         // not instantiate
     }
@@ -68,13 +55,5 @@ public final class FacebookPermissions {
         permissions.add(EMAIL);
         permissions.add(USER_FRIENDS);
         return permissions;
-    }
-
-    /**
-     * @return is permission granted
-     */
-    public static boolean isPermissionGranted(@NonNull String permission) {
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        return accessToken != null && accessToken.getPermissions().contains(permission);
     }
 }

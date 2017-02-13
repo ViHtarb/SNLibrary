@@ -63,10 +63,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-
-import static com.snl.facebook.FacebookPermissions.PUBLISH_ACTIONS;
 
 /**
  * Created by Viнt@rь on 28.11.2015
@@ -349,64 +346,38 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
     }
 
     private void performShareContent(final ShareContent shareContent, final OnShareListener listener) {
-        if (FacebookPermissions.isPermissionGranted(PUBLISH_ACTIONS)) {
-            FacebookCallback<Sharer.Result> facebookCallback = new FacebookCallback<Sharer.Result>() {
-                @Override
-                public void onSuccess(Sharer.Result result) {
-                    if (isRegistered(listener)) {
-                        listener.onShareSuccess(getId());
-                        cancelShareContentRequest();
-                    }
+        FacebookCallback<Sharer.Result> facebookCallback = new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                if (isRegistered(listener)) {
+                    listener.onShareSuccess(getId());
+                    cancelShareContentRequest();
                 }
-
-                @Override
-                public void onCancel() {
-                    if (isRegistered(listener)) {
-                        listener.onError(getId(), Request.SHARE_CONTENT, null, null);
-                        cancelShareContentRequest();
-                    }
-                }
-
-                @Override
-                public void onError(FacebookException error) {
-                    if (isRegistered(listener)) {
-                        listener.onError(getId(), Request.SHARE_CONTENT, error.getMessage(), null);
-                        cancelShareContentRequest();
-                    }
-                }
-            };
-
-            if (ShareDialog.canShow(shareContent.getClass())) {
-                ShareDialog shareDialog = new ShareDialog(getContext());
-                shareDialog.registerCallback(mCallbackManager, facebookCallback);
-                shareDialog.show(shareContent);
-            } else {
-                ShareApi.share(shareContent, facebookCallback);
             }
+
+            @Override
+            public void onCancel() {
+                if (isRegistered(listener)) {
+                    listener.onError(getId(), Request.SHARE_CONTENT, null, null);
+                    cancelShareContentRequest();
+                }
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                if (isRegistered(listener)) {
+                    listener.onError(getId(), Request.SHARE_CONTENT, error.getMessage(), null);
+                    cancelShareContentRequest();
+                }
+            }
+        };
+
+        if (ShareDialog.canShow(shareContent.getClass())) {
+            ShareDialog shareDialog = new ShareDialog(getContext());
+            shareDialog.registerCallback(mCallbackManager, facebookCallback);
+            shareDialog.show(shareContent);
         } else {
-            mLoginManager.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-                @Override
-                public void onSuccess(LoginResult loginResult) {
-                    performShareContent(shareContent, listener);
-                }
-
-                @Override
-                public void onCancel() {
-                    if (isRegistered(listener)) {
-                        listener.onError(getId(), Request.SHARE_CONTENT, null, null);
-                        cancelShareContentRequest();
-                    }
-                }
-
-                @Override
-                public void onError(FacebookException error) {
-                    if (isRegistered(listener)) {
-                        listener.onError(getId(), Request.SHARE_CONTENT, error.getMessage(), null);
-                        cancelShareContentRequest();
-                    }
-                }
-            });
-            mLoginManager.logInWithPublishPermissions(getContext(), Collections.singleton(PUBLISH_ACTIONS));
+            ShareApi.share(shareContent, facebookCallback);
         }
     }
 
