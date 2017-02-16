@@ -56,7 +56,6 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
 
     public enum Request {
         LOGIN,
-        ACCESS_TOKEN,
         PERSON,
         DETAIL_PERSON,
         SOCIAL_PERSON,
@@ -141,20 +140,6 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
         }
 
         registerListener(Request.LOGIN, listener);
-    }
-
-    /**
-     * Request <code>AccessToken</code>
-     */
-    public void requestAccessToken() {
-        requestAccessToken(null);
-    }
-
-    /**
-     * Request <code>AccessToken</code>
-     */
-    public void requestAccessToken(OnRequestAccessTokenListener listener) {
-        registerListener(Request.ACCESS_TOKEN, listener);
     }
 
     /**
@@ -337,13 +322,6 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
     }
 
     /**
-     * Cancel {@link Request#ACCESS_TOKEN} request
-     */
-    public void cancelAccessTokenRequest() {
-        cancelRequest(Request.ACCESS_TOKEN);
-    }
-
-    /**
      * Cancel {@link Request#PERSON} request
      */
     public void cancelCurrentPersonRequest() {
@@ -472,15 +450,6 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
      */
     public void setOnLoginListener(OnLoginListener listener) {
         mGlobalListeners.put(Request.LOGIN, listener);
-    }
-
-    /**
-     * Register a callback to be invoked when {@link #requestAccessToken()} complete.
-     *
-     * @param listener the callback that will run
-     */
-    public void setOnRequestAccessTokenListener(OnRequestAccessTokenListener listener) {
-        mGlobalListeners.put(Request.ACCESS_TOKEN, listener);
     }
 
     /**
