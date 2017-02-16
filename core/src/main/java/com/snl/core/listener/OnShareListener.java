@@ -29,12 +29,12 @@ import com.snl.core.listener.base.SocialNetworkListener;
 /**
  * Interface definition for a callback to be invoked when posting complete.
  */
-public interface OnPostingListener extends SocialNetworkListener {
+public interface OnShareListener extends SocialNetworkListener {
 
     /**
-     * Called when posting complete.
+     * Called when sharing complete.
      *
      * @param socialNetworkId id of social network where request was complete
      */
-    void onPostSuccess(int socialNetworkId);
+    void onShareSuccess(int socialNetworkId);
 }

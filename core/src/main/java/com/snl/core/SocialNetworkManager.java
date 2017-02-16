@@ -25,67 +25,87 @@
 package com.snl.core;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 /**
- * Social network implementations manager
+ * SocialNetworkManager
  */
-public class SocialNetworkManager {
-    private SparseArray<SocialNetwork> mSocialNetworks = new SparseArray<>();
+public final class SocialNetworkManager {
+    private static final SparseArray<SocialNetwork> sNetworks = new SparseArray<>();
 
-    private static SocialNetworkManager sInstance = new SocialNetworkManager();
-
-    public static SocialNetworkManager getInstance() {
-        return sInstance;
-    }
-
-    private SocialNetworkManager() {
-        // not instantiate
+    /**
+     * Check is {@link SocialNetwork} connected
+     *
+     * @param id {@link SocialNetwork} id
+     * @return Is {@link SocialNetwork} connected
+     */
+    public static boolean isConnected(int id) {
+        return get(id).isConnected();
     }
 
     /**
-     * Get social network by id
+     * Check is {@link SocialNetwork} registered
      *
-     * @param id Social network id
-     * @return Social network implementation extends {@link SocialNetwork}
-     * @throws SocialNetworkException
+     * @param socialNetwork checking {@link SocialNetwork}
+     * @return Is {@link SocialNetwork} registered
      */
-    public SocialNetwork getSocialNetwork(int id) throws SocialNetworkException {
-        if (!isExists(id)) {
-            throw new SocialNetworkException("Social network with id = " + id + " not found");
+    public static boolean isRegistered(SocialNetwork socialNetwork) {
+        return isRegistered(socialNetwork.getId());
+    }
+
+    /**
+     * Check is {@link SocialNetwork} registered
+     *
+     * @param id {@link SocialNetwork} id
+     * @return Is {@link SocialNetwork} registered
+     */
+    public static boolean isRegistered(int id) {
+        return sNetworks.get(id) != null;
+    }
+
+    /**
+     * Get {@link SocialNetwork} from manager
+     *
+     * @param id {@link SocialNetwork} id
+     * @return {@link SocialNetwork}
+     */
+    public static SocialNetwork get(int id) {
+        if (!isRegistered(id)) {
+            throw new SocialNetworkException("SocialNetwork with id = " + id + " not registered");
         }
-
-        return mSocialNetworks.get(id);
+        return sNetworks.get(id);
     }
 
     /**
-     * Check is exists social network in manager by id
+     * Register {@link SocialNetwork} in manager
      *
-     * @param id Social network id
-     * @return Is social network exists
+     * @param socialNetwork chosen and setup {@link SocialNetwork}
      */
-    public boolean isExists(int id) {
-        return mSocialNetworks.get(id) != null;
-    }
-
-    /**
-     * @deprecated Use {@link #isExists(int)} instead.
-     */
-    @Deprecated
-    public boolean isSocialNetworkExists(int id) {
-        return isExists(id);
-    }
-
-    /**
-     * Add social networks to manager
-     *
-     * @param socialNetwork chosen and setuped social network
-     */
-    public void addSocialNetwork(SocialNetwork socialNetwork) {
-        if (isExists(socialNetwork.getId())) {
-            throw new SocialNetworkException("Social network with id = " + socialNetwork.getId() + " already exists");
+    public static void register(@NonNull SocialNetwork socialNetwork) {
+        if (isRegistered(socialNetwork)) {
+            throw new SocialNetworkException("SocialNetwork " + socialNetwork.getClass().getName() + "is already registered");
         }
-        mSocialNetworks.put(socialNetwork.getId(), socialNetwork);
+        sNetworks.put(socialNetwork.getId(), socialNetwork);
+    }
+
+    /**
+     * Logout from {@link SocialNetwork} by id
+     *
+     * @param id {@link SocialNetwork} id
+     */
+    public static void logout(int id) {
+        get(id).logout();
+    }
+
+    /**
+     * Logout from all registered {@link SocialNetwork}`s
+     */
+    public static void logout() {
+        for (int i = 0; i < sNetworks.size(); i++) {
+            SocialNetwork socialNetwork = sNetworks.valueAt(i);
+            socialNetwork.logout();
+        }
     }
 
     /**
@@ -95,9 +115,9 @@ public class SocialNetworkManager {
      * @param resultCode  The integer result code returned by the child activity through its setResult().
      * @param data        An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
      */
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        for (int i = 0; i < mSocialNetworks.size(); i++) {
-            SocialNetwork socialNetwork = mSocialNetworks.valueAt(i);
+    public static void onActivityResult(int requestCode, int resultCode, Intent data) {
+        for (int i = 0; i < sNetworks.size(); i++) {
+            SocialNetwork socialNetwork = sNetworks.valueAt(i);
             socialNetwork.onActivityResult(requestCode, resultCode, data);
         }
     }

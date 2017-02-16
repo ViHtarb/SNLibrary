@@ -24,18 +24,21 @@
 
 package com.snl.facebook;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Created by Viнt@rь on 28.11.2015
- * <p>Compatible FB permissions</p>
- * <p>The all FB permissions list is available in <a href="https://developers.facebook.com/docs/facebook-login/permissions/overview">documentation</a></p>
+ * <p>
+ *     Compatible FB permissions
+ * </p>
+ * <p>
+ *     The all FB permissions list is available in
+ *     <a href="https://developers.facebook.com/docs/facebook-login/permissions/overview">documentation</a>
+ * </p>
  */
 public final class FacebookPermissions {
 
     public static final String PUBLIC_PROFILE = "public_profile";
-    public static final String PUBLISH_ACTIONS = "publish_actions";
     public static final String EMAIL = "email";
     public static final String USER_FRIENDS = "user_friends";
 
@@ -44,12 +47,13 @@ public final class FacebookPermissions {
     }
 
     /**
-     * @return base permissions list, contains {@link #PUBLIC_PROFILE} {@link #EMAIL}
+     * @return base permissions list, contains {@link #PUBLIC_PROFILE}, {@link #EMAIL}, {@link #USER_FRIENDS}
      */
-    public static List<String> getPermissions() {
-        List<String> permissions = new ArrayList<>();
+    public static Set<String> getPermissions() {
+        Set<String> permissions = new HashSet<>();
         permissions.add(PUBLIC_PROFILE);
         permissions.add(EMAIL);
+        permissions.add(USER_FRIENDS);
         return permissions;
     }
 }

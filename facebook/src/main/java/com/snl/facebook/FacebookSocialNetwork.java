@@ -28,6 +28,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -40,12 +42,19 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.internal.Utility;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.share.ShareApi;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareContent;
+import com.facebook.share.widget.ShareDialog;
 import com.google.gson.reflect.TypeToken;
 import com.snl.core.SocialNetwork;
 import com.snl.core.SocialNetworkException;
 import com.snl.core.SocialPerson;
 import com.snl.core.listener.OnCheckIsFriendListener;
 import com.snl.core.listener.OnLoginListener;
+import com.snl.core.listener.OnRequestAddFriendListener;
+import com.snl.core.listener.OnRequestRemoveFriendListener;
+import com.snl.core.listener.OnShareListener;
 import com.snl.core.listener.OnRequestDetailedSocialPersonListener;
 import com.snl.core.listener.OnRequestFriendsListener;
 import com.snl.core.listener.OnRequestSocialPersonListener;
@@ -55,20 +64,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Created by Viнt@rь on 28.11.2015
  */
-public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
+public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareContent> {
     public static final int ID = 1;
 
-    private LoginManager mLoginManager;
-    private CallbackManager mCallbackManager;
+    private final LoginManager mLoginManager;
+    private final CallbackManager mCallbackManager;
 
-    private List<String> mPermissions;
+    private final Collection<String> mPermissions;
 
-    public FacebookSocialNetwork(Application application, List<String> permissions) {
+    public FacebookSocialNetwork(@NonNull Application application, @Nullable Collection<String> permissions) {
         super(application);
         String applicationId = Utility.getMetadataApplicationId(application);
 
@@ -101,7 +111,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
 
     @Override
     public boolean isConnected() {
-        return getAccessToken() != null;
+        return getAccessToken() != null && !getAccessToken().isExpired();
     }
 
     @Override
@@ -210,11 +220,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     /**
-     * Not supported via Facebook sdk.
-     *
-     * @param userId   user id in social network
-     * @param listener listener for request {@link com.snl.core.SocialPerson}
-     * @throws SocialNetworkException
+     * Not supported via Facebook SDK
      */
     @Override
     public void requestSocialPerson(String userId, OnRequestSocialPersonListener listener) {
@@ -222,11 +228,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     /**
-     * Not supported via Facebook sdk.
-     *
-     * @param userId   array of user ids in social network
-     * @param listener listener for request ArrayList of {@link com.snl.core.SocialPerson}
-     * @throws SocialNetworkException
+     * Not supported via Facebook SDK
      */
     @Override
     public void requestSocialPersons(String[] userId, OnRequestSocialPersonsListener listener) {
@@ -234,11 +236,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     /**
-     * Not supported via Facebook sdk.
-     *
-     * @param userId   user id in social network
-     * @param listener listener for request {@link FacebookPerson}
-     * @throws SocialNetworkException
+     * Not supported via Facebook SDK
      */
     @Override
     public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonListener listener) {
@@ -246,10 +244,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     /**
-     * Not supported via Facebook sdk
-     *
-     * @param userId   user id that should be checked as friend of current user
-     * @param listener listener for checking friend request
+     * Not supported via Facebook SDK
      */
     @Override
     public void requestCheckIsFriend(String userId, OnCheckIsFriendListener listener) {
@@ -288,7 +283,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
     }
 
     /**
-     * Get a list of friends that can be invited to install a Facebook game.
+     * Request a list of friends that can be invited to install a Facebook game
      *
      * <p>
      *     The Invitable Friends API is only available to apps classified as Games,
@@ -337,11 +332,78 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken> {
         request.executeAsync();
     }
 
-    private static FacebookPerson parsePerson(JSONObject person) {
+    /**
+     * Not supported via Facebook sdk.
+     */
+    @Override
+    public void requestAddFriend(String userID, OnRequestAddFriendListener listener) {
+        throw new SocialNetworkException("requestAddFriend isn't allowed for FacebookSocialNetwork");
+    }
+
+    /**
+     * Not supported via Facebook sdk.
+     */
+    @Override
+    public void requestRemoveFriend(String userID, OnRequestRemoveFriendListener listener) {
+        throw new SocialNetworkException("requestRemoveFriend isn't allowed for FacebookSocialNetwork");
+    }
+
+    @Override
+    public void requestShareContent(ShareContent shareContent, OnShareListener listener) {
+        super.requestShareContent(shareContent, listener);
+
+        if (!isConnected()) {
+            if (isRegistered(listener)) {
+                listener.onError(getId(), Request.SHARE_CONTENT, "Please login first", null);
+                cancelShareContentRequest();
+            }
+            return;
+        }
+
+        performShareContent(shareContent, listener);
+    }
+
+    private void performShareContent(final ShareContent shareContent, final OnShareListener listener) {
+        FacebookCallback<Sharer.Result> facebookCallback = new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                if (isRegistered(listener)) {
+                    listener.onShareSuccess(getId());
+                    cancelShareContentRequest();
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                if (isRegistered(listener)) {
+                    listener.onError(getId(), Request.SHARE_CONTENT, null, null);
+                    cancelShareContentRequest();
+                }
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                if (isRegistered(listener)) {
+                    listener.onError(getId(), Request.SHARE_CONTENT, error.getMessage(), null);
+                    cancelShareContentRequest();
+                }
+            }
+        };
+
+        if (ShareDialog.canShow(shareContent.getClass())) {
+            ShareDialog shareDialog = new ShareDialog(getContext());
+            shareDialog.registerCallback(mCallbackManager, facebookCallback);
+            shareDialog.show(shareContent);
+        } else {
+            ShareApi.share(shareContent, facebookCallback);
+        }
+    }
+
+    private FacebookPerson parsePerson(JSONObject person) {
         return GSON.fromJson(person.toString(), FacebookPerson.class);
     }
 
-    private static List<SocialPerson> parsePersons(JSONArray persons) {
+    private List<SocialPerson> parsePersons(JSONArray persons) {
         return GSON.fromJson(persons.toString(), new TypeToken<List<FacebookPerson>>(){}.getType());
     }
 }
