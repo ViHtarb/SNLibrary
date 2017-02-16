@@ -56,7 +56,6 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
 
     public enum Request {
         LOGIN,
-        LOGIN2,
         ACCESS_TOKEN,
         PERSON,
         DETAIL_PERSON,
@@ -64,36 +63,11 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
         DETAIL_SOCIAL_PERSON,
         SOCIAL_PERSONS,
         SHARE_CONTENT,
-        //SHARE_MESSAGE,
-        //SHARE_PHOTO,
-        //SHARE_LINK,
-        //SHARE_DIALOG,
         CHECK_IS_FRIEND,
         FRIENDS,
         ADD_FRIEND,
         REMOVE_FRIEND
     }
-
-/*    // Share bundle constant for message
-    public static final String BUNDLE_MESSAGE = "message";
-
-    // Share bundle constant for link
-    public static final String BUNDLE_LINK = "link";
-
-    // Share bundle constant for friendslist
-    public static final String DIALOG_FRIENDS = "friends";
-
-    // Share bundle constant for title
-    public static final String BUNDLE_NAME = "name";
-
-    // Share bundle constant for application name
-    public static final String BUNDLE_APP_NAME = "app_name";
-
-    // Share bundle constant for caption
-    public static final String BUNDLE_CAPTION = "caption";
-
-    // Share bundle constant for picture
-    public static final String BUNDLE_PICTURE = "picture";*/
 
     protected static final Gson GSON = new Gson();
 
@@ -354,100 +328,6 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
     public void requestShareContent(ShareContent shareContent, OnShareListener listener) {
         registerListener(Request.SHARE_CONTENT, listener);
     }
-/*
-
-    */
-/**
-     * Post message to <code>SocialNetwork</code>
-     *
-     * @param message message that should be shared
-     *//*
-
-    public void requestShareMessage(String message) {
-        requestShareMessage(message, null);
-    }
-
-    */
-/**
-     * Post message to <code>SocialNetwork</code>
-     *
-     * @param message message that should be shared
-     *//*
-
-    public void requestShareMessage(String message, OnShareListener listener) {
-        registerListener(Request.SHARE_MESSAGE, listener);
-    }
-
-    */
-/**
-     * Post photo to <code>SocialNetwork</code>
-     *
-     * @param photo photo that should be shared
-     * @param message message that should be shared with photo
-     *//*
-
-    public void requestSharePhoto(File photo, String message) {
-        requestSharePhoto(photo, message, null);
-    }
-
-    */
-/**
-     * Post photo to <code>SocialNetwork</code>
-     *
-     * @param photo photo that should be shared
-     * @param message message that should be shared with photo
-     *//*
-
-    public void requestSharePhoto(File photo, String message, OnShareListener listener) {
-        registerListener(Request.SHARE_PHOTO, listener);
-    }
-
-    */
-/**
-     * Post link with comment to <code>SocialNetwork</code>
-     *
-     * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
-     * @param message message that should be shared with bundle
-     *//*
-
-    public void requestShareLink(Bundle bundle, String message) {
-        requestShareLink(bundle, message, null);
-    }
-
-    */
-/**
-     * Post link with comment to <code>SocialNetwork</code>
-     *
-     * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
-     * @param message message that should be shared with bundle
-     *//*
-
-    public void requestShareLink(Bundle bundle, String message, OnShareListener listener) {
-        registerListener(Request.SHARE_LINK, listener);
-    }
-
-    */
-/**
-     * Request Share dialog of <code>SocialNetwork</code>
-     *
-     * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
-     *//*
-
-    public void requestShareDialog(Bundle bundle) {
-        requestShareDialog(bundle, null);
-    }
-
-    */
-/**
-     * Request Share dialog of <code>SocialNetwork</code>
-     *
-     * @param bundle bundle containing information that should be shared(Bundle constants in {@link SocialNetwork})
-     *//*
-
-    public void requestShareDialog(Bundle bundle, OnShareListener listener) {
-        registerListener(Request.SHARE_DIALOG, listener);
-    }
-*/
 
     /**
      * Cancel {@link Request#LOGIN} request
@@ -526,47 +406,12 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
         cancelRequest(Request.REMOVE_FRIEND);
     }
 
+    /**
+     * Cancel {@link Request#SHARE_CONTENT} request
+     */
     public void cancelShareContentRequest() {
         cancelRequest(Request.SHARE_CONTENT);
     }
-/*
-
-    */
-/**
-     * Cancel {@link Request#SHARE_MESSAGE} request
-     *//*
-
-    public void cancelShareMessageRequest() {
-        cancelRequest(Request.SHARE_MESSAGE);
-    }
-
-    */
-/**
-     * Cancel {@link Request#SHARE_PHOTO} request
-     *//*
-
-    public void cancelSharePhotoRequest() {
-        cancelRequest(Request.SHARE_PHOTO);
-    }
-
-    */
-/**
-     * Cancel {@link Request#SHARE_LINK} request
-     *//*
-
-    public void cancelShareLinkRequest() {
-        cancelRequest(Request.SHARE_LINK);
-    }
-
-    */
-/**
-     * Cancel {@link Request#SHARE_DIALOG} request
-     *//*
-
-    public void cancelShareDialogRequest() {
-        cancelRequest(Request.SHARE_DIALOG);
-    }
-*/
 
     /**
      * Cancel all {@link Request}`s
@@ -729,42 +574,6 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
     public void setOnShareContentListener(OnShareListener listener) {
         mGlobalListeners.put(Request.SHARE_CONTENT, listener);
     }
-
- /*   *//**
-     * Register a callback to be invoked when {@link #requestShareMessage(String)} complete.
-     *
-     * @param listener the callback that will run
-     *//*
-    public void setOnShareMessageListener(OnShareListener listener) {
-        mGlobalListeners.put(Request.SHARE_MESSAGE, listener);
-    }
-
-    *//**
-     * Register a callback to be invoked when {@link #requestSharePhoto(File, String)} complete.
-     *
-     * @param listener the callback that will run
-     *//*
-    public void setOnSharePhotoListener(OnShareListener listener) {
-        mGlobalListeners.put(Request.SHARE_PHOTO, listener);
-    }
-
-    *//**
-     * Register a callback to be invoked when {@link #requestShareLink(Bundle, String)} complete.
-     *
-     * @param listener the callback that will run
-     *//*
-    public void setOnShareLinkListener(OnShareListener listener) {
-        mGlobalListeners.put(Request.SHARE_LINK, listener);
-    }
-
-    *//**
-     * Register a callback to be invoked when {@link #requestShareDialog(Bundle)} complete.
-     *
-     * @param listener the callback that will run
-     *//*
-    public void setOnShareDialogListener(OnShareListener listener) {
-        mGlobalListeners.put(Request.SHARE_DIALOG, listener);
-    }*/
 
     private final class ActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
 

@@ -52,6 +52,8 @@ import com.snl.core.SocialNetworkException;
 import com.snl.core.SocialPerson;
 import com.snl.core.listener.OnCheckIsFriendListener;
 import com.snl.core.listener.OnLoginListener;
+import com.snl.core.listener.OnRequestAddFriendListener;
+import com.snl.core.listener.OnRequestRemoveFriendListener;
 import com.snl.core.listener.OnShareListener;
 import com.snl.core.listener.OnRequestDetailedSocialPersonListener;
 import com.snl.core.listener.OnRequestFriendsListener;
@@ -328,6 +330,22 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
             }
         });
         request.executeAsync();
+    }
+
+    /**
+     * Not supported via Facebook sdk.
+     */
+    @Override
+    public void requestAddFriend(String userID, OnRequestAddFriendListener listener) {
+        throw new SocialNetworkException("requestAddFriend isn't allowed for FacebookSocialNetwork");
+    }
+
+    /**
+     * Not supported via Facebook sdk.
+     */
+    @Override
+    public void requestRemoveFriend(String userID, OnRequestRemoveFriendListener listener) {
+        throw new SocialNetworkException("requestRemoveFriend isn't allowed for FacebookSocialNetwork");
     }
 
     @Override
