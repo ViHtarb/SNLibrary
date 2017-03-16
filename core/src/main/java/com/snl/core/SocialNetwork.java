@@ -36,7 +36,6 @@ import com.google.gson.Gson;
 import com.snl.core.listener.OnCheckIsFriendListener;
 import com.snl.core.listener.OnLoginListener;
 import com.snl.core.listener.OnShareListener;
-import com.snl.core.listener.OnRequestAccessTokenListener;
 import com.snl.core.listener.OnRequestAddFriendListener;
 import com.snl.core.listener.OnRequestDetailedSocialPersonListener;
 import com.snl.core.listener.OnRequestFriendsListener;
@@ -45,7 +44,6 @@ import com.snl.core.listener.OnRequestSocialPersonListener;
 import com.snl.core.listener.OnRequestSocialPersonsListener;
 import com.snl.core.listener.base.SocialNetworkListener;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 

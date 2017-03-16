@@ -37,12 +37,10 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.internal.Utility;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.share.ShareApi;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareContent;
 import com.facebook.share.widget.ShareDialog;
@@ -61,7 +59,6 @@ import com.snl.core.listener.OnRequestSocialPersonListener;
 import com.snl.core.listener.OnRequestSocialPersonsListener;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Collection;
@@ -251,6 +248,20 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
         throw new SocialNetworkException("requestCheckIsFriend isn't allowed for FacebookSocialNetwork");
     }
 
+    /**
+     * Request current user friends
+     *
+     * <p>
+     *     The Friends API returns only friends that have installed your app.
+     * </p>
+     * <p>
+     *     See Facebook Graph API
+     *     <a href="https://developers.facebook.com/docs/graph-api/reference/user/friends">User friends</a>
+     *     guide for more details.
+     * </p>
+     *
+     * @param listener listener for getting list of current user friends
+     */
     @Override
     public void requestFriends(final OnRequestFriendsListener listener) {
         super.requestFriends(listener);
@@ -283,57 +294,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
     }
 
     /**
-     * Request a list of friends that can be invited to install a Facebook game
-     *
-     * <p>
-     *     The Invitable Friends API is only available to apps classified as Games,
-     *     which also have a Canvas presence.
-     * </p>
-     * <p>
-     *     See Facebook Graph API
-     *     <a href="https://developers.facebook.com/docs/graph-api/reference/user/invitable_friends">User invitable_friends</a>
-     *     guide for more details.
-     * </p>
-     *
-     * @param listener listener for getting list of current user friends
-     */
-    public void requestInvitableFriends(final OnRequestFriendsListener listener) {
-        super.requestFriends(listener);
-
-        if (!isConnected()) {
-            if (isRegistered(listener)) {
-                listener.onError(getId(), Request.FRIENDS, "Please login first", null);
-                cancelFriendsRequest();
-            }
-            return;
-        }
-
-        Bundle parameters = new Bundle();
-        parameters.putInt("limit", 5000);
-        parameters.putString("fields", "name, picture.width(480).height(480)");
-        GraphRequest request = new GraphRequest(getAccessToken(), "/me/invitable_friends", parameters, HttpMethod.GET, new GraphRequest.Callback() {
-            @Override
-            public void onCompleted(GraphResponse response) {
-                if (isRegistered(listener)) {
-                    if (response.getError() == null) {
-                        try {
-                            JSONArray persons = response.getJSONObject().getJSONArray("data");
-                            listener.onRequestFriendsSuccess(getId(), parsePersons(persons));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        listener.onError(getId(), Request.FRIENDS, response.getError().getErrorMessage(), null);
-                    }
-                    cancelFriendsRequest();
-                }
-            }
-        });
-        request.executeAsync();
-    }
-
-    /**
-     * Not supported via Facebook sdk.
+     * Not supported via Facebook SDK
      */
     @Override
     public void requestAddFriend(String userID, OnRequestAddFriendListener listener) {
@@ -341,13 +302,28 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
     }
 
     /**
-     * Not supported via Facebook sdk.
+     * Not supported via Facebook SDK
      */
     @Override
     public void requestRemoveFriend(String userID, OnRequestRemoveFriendListener listener) {
         throw new SocialNetworkException("requestRemoveFriend isn't allowed for FacebookSocialNetwork");
     }
 
+    /**
+     * Request to share custom content to Facebook <code>SocialNetwork</code>
+     *
+     * <p>
+     *     The Share Content is requires installed native Facebook app,
+     *     version 7.0 or higher.
+     * </p>
+     * <p>
+     *     See
+     *     <a href="https://developers.facebook.com/docs/sharing/android">Share Content</a>
+     *     guide for more details.
+     * </p>
+     *
+     * @param shareContent content that should be shared
+     */
     @Override
     public void requestShareContent(ShareContent shareContent, OnShareListener listener) {
         super.requestShareContent(shareContent, listener);
@@ -364,7 +340,8 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
     }
 
     private void performShareContent(final ShareContent shareContent, final OnShareListener listener) {
-        FacebookCallback<Sharer.Result> facebookCallback = new FacebookCallback<Sharer.Result>() {
+        ShareDialog shareDialog = new ShareDialog(getContext());
+        shareDialog.registerCallback(mCallbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
                 if (isRegistered(listener)) {
@@ -388,15 +365,8 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
                     cancelShareContentRequest();
                 }
             }
-        };
-
-        if (ShareDialog.canShow(shareContent.getClass())) {
-            ShareDialog shareDialog = new ShareDialog(getContext());
-            shareDialog.registerCallback(mCallbackManager, facebookCallback);
-            shareDialog.show(shareContent);
-        } else {
-            ShareApi.share(shareContent, facebookCallback);
-        }
+        });
+        shareDialog.show(shareContent);
     }
 
     private FacebookPerson parsePerson(JSONObject person) {
