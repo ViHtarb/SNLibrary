@@ -26,6 +26,7 @@ package com.snl.facebook;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,6 +34,7 @@ import android.support.annotation.Nullable;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
+import com.facebook.FacebookActivity;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
@@ -92,13 +94,20 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+    protected void updateContext(@NonNull Context context) {
+        if (!(context instanceof FacebookActivity)) {
+            super.updateContext(context);
+        }
     }
 
     @Override
     public Activity getContext() {
         return (Activity) super.getContext();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

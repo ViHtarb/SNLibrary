@@ -71,13 +71,15 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
     protected final Map<Request, SocialNetworkListener> mGlobalListeners = new HashMap<>();
     protected final Map<Request, SocialNetworkListener> mLocalListeners = new HashMap<>();
 
-    protected final ActivityLifecycleCallbacks mActivityLifecycleCallbacks = new ActivityLifecycleCallbacks();
-
     private Context mContext;
 
     public SocialNetwork(Application application) {
         mContext = application.getApplicationContext();
-        application.registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
+        application.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+    }
+
+    protected void updateContext(@NonNull Context context) {
+        mContext = context;
     }
 
     public Context getContext() {
@@ -554,7 +556,7 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
 
         @Override
         public void onActivityResumed(Activity activity) {
-            mContext = activity;
+            updateContext(activity);
         }
 
         @Override
