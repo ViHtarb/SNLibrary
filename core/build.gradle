@@ -9,7 +9,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "${version}"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -23,11 +23,11 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:' + rootProject.ext.junitVersion
-    compile 'com.android.support:support-annotations:' + rootProject.ext.supportLibraryVersion
-    compile 'com.google.code.gson:gson:' + rootProject.ext.gson
+    testImplementation 'junit:junit:' + rootProject.ext.junitVersion
+    api 'com.android.support:support-annotations:' + rootProject.ext.supportLibraryVersion
+    api 'com.google.code.gson:gson:' + rootProject.ext.gson
 }

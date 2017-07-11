@@ -9,7 +9,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "${version}"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -23,13 +23,11 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:' + rootProject.ext.junitVersion
-    compile project(':core')
-    compile 'com.android.support:customtabs:' + rootProject.ext.supportLibraryVersion // FOR FUCKING FACEBOOK SDK
-    compile 'com.android.support:cardview-v7:' + rootProject.ext.supportLibraryVersion // FOR FUCKING FACEBOOK SDK
-    compile 'com.facebook.android:facebook-android-sdk:4.23.0'
+    testImplementation 'junit:junit:' + rootProject.ext.junitVersion
+    api project(':core')
+    implementation 'com.facebook.android:facebook-android-sdk:4.24.0'
 }
