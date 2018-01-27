@@ -34,5 +34,5 @@ ext {
 
     junitVersion = "4.12"
 
-    gson = "2.8.1"
+    gson = "2.8.2"
 }
