@@ -105,6 +105,6 @@ public class VKSocialNetwork extends SocialNetwork<VKAccessToken, VKAttachments>
     @Override
     public void requestLogin(@NonNull OnLoginListener onLoginListener) {
         super.requestLogin(onLoginListener);
-        VKSdk.login(getContext(), mPermissions.toArray(new String[mPermissions.size()]));
+        VKSdk.login(getContext(), mPermissions.toArray(new String[0]));
     }
 }

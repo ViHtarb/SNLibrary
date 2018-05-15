@@ -23,9 +23,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation 'com.android.support.test:runner:1.0.0'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.0'
+    androidTestImplementation 'com.android.support.test:runner:' + rootProject.ext.supportTestRunner
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:' + rootProject.ext.supportTestEspresso
     testImplementation 'junit:junit:' + rootProject.ext.junitVersion
     api project(':core')
-    implementation 'com.facebook.android:facebook-android-sdk:4.26.0'
+    implementation 'com.facebook.android:facebook-android-sdk:4.33.0'
 }

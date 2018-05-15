@@ -70,11 +70,12 @@ public final class SocialNetworkManager {
      * @param id {@link SocialNetwork} id
      * @return {@link SocialNetwork}
      */
-    public static SocialNetwork get(int id) {
+    @SuppressWarnings("unchecked")
+    public static <T extends SocialNetwork> T get(int id) {
         if (!isRegistered(id)) {
             throw new SocialNetworkException("SocialNetwork with id = " + id + " not registered");
         }
-        return sNetworks.get(id);
+        return (T) sNetworks.get(id);
     }
 
     /**

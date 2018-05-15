@@ -56,12 +56,12 @@ public class MainActivity extends AppCompatActivity {
             SocialNetworkManager.register(new FacebookSocialNetwork(getApplication(), FacebookPermissions.getPermissions()));
         }
 
-        Button button = (Button) findViewById(R.id.fb_button);
+        Button button = findViewById(R.id.fb_button);
         assert button != null;
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final FacebookSocialNetwork socialNetwork = (FacebookSocialNetwork) SocialNetworkManager.get(FacebookSocialNetwork.ID);
+                final FacebookSocialNetwork socialNetwork = SocialNetworkManager.get(FacebookSocialNetwork.ID);
 
                 if (socialNetwork.isConnected()) {
                     //socialNetwork.logout();
