@@ -32,13 +32,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.snl.core.SocialNetwork;
 import com.snl.core.SocialNetworkManager;
-import com.snl.core.SocialPerson;
+import com.snl.core.SocialUser;
 import com.snl.core.listener.OnLoginListener;
 import com.snl.core.listener.OnRequestFriendsListener;
 import com.snl.facebook.FacebookPermissions;
 import com.snl.facebook.FacebookSocialNetwork;
+import com.snl.google.GoogleSocialNetwork;
 
 import java.util.List;
 
@@ -54,69 +56,67 @@ public class MainActivity extends AppCompatActivity {
 
         if (!SocialNetworkManager.isRegistered(FacebookSocialNetwork.ID)) {
             SocialNetworkManager.register(new FacebookSocialNetwork(getApplication(), FacebookPermissions.getPermissions()));
+
+            GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .requestProfile()
+                    .build();
+
+            SocialNetworkManager.register(new GoogleSocialNetwork(getApplication(), signInOptions));
         }
 
-        Button button = findViewById(R.id.fb_button);
-        assert button != null;
-        button.setOnClickListener(new View.OnClickListener() {
+        final SocialNetwork facebookSocialNetwork = SocialNetworkManager.get(FacebookSocialNetwork.ID);
+        final SocialNetwork googleSocialNetwork = SocialNetworkManager.get(GoogleSocialNetwork.ID);
+
+        Button loginButton = findViewById(R.id.login_button);
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final FacebookSocialNetwork socialNetwork = SocialNetworkManager.get(FacebookSocialNetwork.ID);
+                googleSocialNetwork.logout();
+                googleSocialNetwork.requestLogin(new OnLoginListener() {
+                    @Override
+                    public void onLoginSuccess(int socialNetworkId) {
+                        Log.d("TEST", "loginSuccess");
+                    }
 
-                if (socialNetwork.isConnected()) {
-                    //socialNetwork.logout();
-/*                    socialNetwork.requestDetailedCurrentPerson(new OnRequestDetailedSocialPersonListener<FacebookPerson>() {
+                    @Override
+                    public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
+                        Log.d("TEST", "onError" + " " + errorMessage);
+                    }
+                });
+/*                if (socialNetwork.isConnected()) {
+                    socialNetwork.logout();
+                } else {
+                    socialNetwork.requestLogin(new OnLoginListener() {
                         @Override
-                        public void onRequestDetailedSocialPersonSuccess(int socialNetworkID, FacebookPerson socialPerson) {
-                            Log.d("TEST", "onRequestDetailedSocialPersonSuccess");
-                            Log.d("TEST", socialPerson.toString());
+                        public void onLoginSuccess(int socialNetworkID) {
+                            Log.d("TEST", "onLoginSuccess");
                         }
 
                         @Override
                         public void onError(int socialNetworkID, SocialNetwork.Request request, String errorMessage, Object data) {
-
-                        }
-                    });*/
-
- /*                   if (socialNetwork instanceof FacebookSocialNetwork) {
-                        ((FacebookSocialNetwork) socialNetwork).requestInvitableFriends(new OnRequestFriendsListener() {
-                            @Override
-                            public void onRequestFriendsSuccess(int socialNetworkId, List<? extends SocialPerson> socialFriends) {
-                                Log.d("TEST", "onRequestFriendsSuccess");
-                                for (SocialPerson person : socialFriends) {
-                                    Log.d("TEST", person.toString());
-                                }
-                            }
-
-                            @Override
-                            public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
-                                Log.d("TEST", "onError");
-                            }
-                        });
-                    }*/
-                    socialNetwork.requestFriends(new OnRequestFriendsListener() {
-
-                        @Override
-                        public void onRequestFriendsSuccess(int socialNetworkId, List<SocialPerson> socialFriends) {
-                            Log.d("TEST", "onRequestFriendsSuccess");
-                            Log.d("TEST", "friends list size = " + socialFriends.size());
-                        }
-
-                        public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
-
+                            Log.d("TEST", "onError" + " " + errorMessage);
                         }
                     });
-                    return;
-                }
-                socialNetwork.requestLogin(new OnLoginListener() {
+                }*/
+            }
+        });
+
+        Button friendsButton = findViewById(R.id.friends_button);
+        friendsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                facebookSocialNetwork.requestFriends(new OnRequestFriendsListener() {
+
                     @Override
-                    public void onLoginSuccess(int socialNetworkID) {
-                        Log.d("TEST", "onLoginSuccess");
+                    public void onRequestFriendsSuccess(int socialNetworkId, List<SocialUser> socialUsers) {
+                        Log.d("TEST", "onRequestFriendsSuccess");
+                        Log.d("TEST", "friends list size = " + socialUsers.size());
                     }
 
                     @Override
-                    public void onError(int socialNetworkID, SocialNetwork.Request request, String errorMessage, Object data) {
-                        Log.d("TEST", "onError" + " " + errorMessage);
+                    public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
+
                     }
                 });
             }

@@ -32,6 +32,7 @@ import android.util.SparseArray;
  * SocialNetworkManager
  */
 public final class SocialNetworkManager {
+
     private static final SparseArray<SocialNetwork> sNetworks = new SparseArray<>();
 
     /**

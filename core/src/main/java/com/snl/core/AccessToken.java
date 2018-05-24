@@ -29,8 +29,8 @@ package com.snl.core;
  */
 public class AccessToken {
 
-    private String mToken;
-    private String mSecret;
+    private final String mToken;
+    private final String mSecret;
 
     public AccessToken(String token, String secret) {
         mToken = token;

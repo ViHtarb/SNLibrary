@@ -1,11 +1,10 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.snl.sample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -13,6 +12,7 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -26,10 +26,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:' + rootProject.ext.supportTestRunner
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:' + rootProject.ext.supportTestEspresso
     testImplementation 'junit:junit:' + rootProject.ext.junitVersion
-    implementation 'com.android.support:appcompat-v7:' + rootProject.ext.supportLibraryVersion
-    implementation ('com.google.android.gms:play-services-auth:' + rootProject.ext.playServicesVersion) {
-        exclude module: 'support-v4'
-    }
-    implementation project(':facebook')
-    implementation project(':google')
+    api project(':core')
+    implementation 'com.google.android.gms:play-services-auth:' + rootProject.ext.playServicesVersion
 }

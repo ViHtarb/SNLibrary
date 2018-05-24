@@ -24,7 +24,7 @@
 
 package com.snl.core.listener;
 
-import com.snl.core.SocialPerson;
+import com.snl.core.SocialUser;
 import com.snl.core.listener.base.SocialNetworkListener;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public interface OnRequestFriendsListener extends SocialNetworkListener {
      * Called when friends list request complete.
      *
      * @param socialNetworkId id of social network where request was complete
-     * @param socialFriends   ArrayList of of friends list's social persons
+     * @param socialUsers     List of social friends
      */
-    void onRequestFriendsSuccess(int socialNetworkId, List<SocialPerson> socialFriends);
+    void onRequestFriendsSuccess(int socialNetworkId, List<SocialUser> socialUsers);
 }

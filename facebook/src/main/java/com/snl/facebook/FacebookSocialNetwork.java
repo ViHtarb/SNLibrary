@@ -49,16 +49,16 @@ import com.facebook.share.widget.ShareDialog;
 import com.google.gson.reflect.TypeToken;
 import com.snl.core.SocialNetwork;
 import com.snl.core.SocialNetworkException;
-import com.snl.core.SocialPerson;
+import com.snl.core.SocialUser;
 import com.snl.core.listener.OnCheckIsFriendListener;
 import com.snl.core.listener.OnLoginListener;
 import com.snl.core.listener.OnRequestAddFriendListener;
-import com.snl.core.listener.OnRequestRemoveFriendListener;
-import com.snl.core.listener.OnShareListener;
-import com.snl.core.listener.OnRequestDetailedSocialPersonListener;
+import com.snl.core.listener.OnRequestDetailedSocialUserListener;
 import com.snl.core.listener.OnRequestFriendsListener;
-import com.snl.core.listener.OnRequestSocialPersonListener;
-import com.snl.core.listener.OnRequestSocialPersonsListener;
+import com.snl.core.listener.OnRequestRemoveFriendListener;
+import com.snl.core.listener.OnRequestSocialUserListener;
+import com.snl.core.listener.OnRequestSocialUsersListener;
+import com.snl.core.listener.OnShareListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -72,10 +72,10 @@ import java.util.List;
 public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareContent> {
     public static final int ID = 1;
 
+    private final Collection<String> mPermissions;
+
     private final LoginManager mLoginManager;
     private final CallbackManager mCallbackManager;
-
-    private final Collection<String> mPermissions;
 
     public FacebookSocialNetwork(@NonNull Application application, @Nullable Collection<String> permissions) {
         super(application);
@@ -111,8 +111,8 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
     }
 
     @Override
-    public AccessToken getAccessToken() {
-        return AccessToken.getCurrentAccessToken();
+    public int getId() {
+        return ID;
     }
 
     @Override
@@ -121,13 +121,13 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
     }
 
     @Override
-    public void logout() {
-        mLoginManager.logOut();
+    public AccessToken getAccessToken() {
+        return AccessToken.getCurrentAccessToken();
     }
 
     @Override
-    public int getId() {
-        return ID;
+    public void logout() {
+        mLoginManager.logOut();
     }
 
     @Override
@@ -163,13 +163,13 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
     }
 
     @Override
-    public void requestCurrentPerson(final OnRequestSocialPersonListener listener) {
-        super.requestCurrentPerson(listener);
+    public void requestCurrentUser(final OnRequestSocialUserListener listener) {
+        super.requestCurrentUser(listener);
 
         if (!isConnected()) {
             if (isRegistered(listener)) {
-                listener.onError(getId(), Request.PERSON, "Please login first", null);
-                cancelCurrentPersonRequest();
+                listener.onError(getId(), Request.USER, "Please login first", null);
+                cancelCurrentUserRequest();
             }
             return;
         }
@@ -181,11 +181,11 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
             public void onCompleted(JSONObject object, GraphResponse response) {
                 if (isRegistered(listener)) {
                     if (response.getError() == null) {
-                        listener.onRequestSocialPersonSuccess(getId(), parsePerson(object));
+                        listener.onRequestSocialUserSuccess(getId(), parseUser(object));
                     } else {
-                        listener.onError(getId(), Request.PERSON, response.getError().getErrorMessage(), null);
+                        listener.onError(getId(), Request.USER, response.getError().getErrorMessage(), null);
                     }
-                    cancelCurrentPersonRequest();
+                    cancelCurrentUserRequest();
                 }
             }
         });
@@ -195,13 +195,13 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
 
     @Override
     @SuppressWarnings("unchecked")
-    public void requestDetailedCurrentPerson(final OnRequestDetailedSocialPersonListener listener) {
-        super.requestDetailedCurrentPerson(listener);
+    public void requestDetailedCurrentUser(final OnRequestDetailedSocialUserListener listener) {
+        super.requestDetailedCurrentUser(listener);
 
         if (!isConnected()) {
             if (isRegistered(listener)) {
-                listener.onError(getId(), Request.DETAIL_PERSON, "Please login first", null);
-                cancelDetailedCurrentPersonRequest();
+                listener.onError(getId(), Request.DETAIL_USER, "Please login first", null);
+                cancelDetailedCurrentUserRequest();
             }
             return;
         }
@@ -213,11 +213,11 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
             public void onCompleted(JSONObject object, GraphResponse response) {
                 if (isRegistered(listener)) {
                     if (response.getError() == null) {
-                        listener.onRequestDetailedSocialPersonSuccess(getId(), parsePerson(object));
+                        listener.onRequestDetailedSocialUserSuccess(getId(), parseUser(object));
                     } else {
-                        listener.onError(getId(), Request.DETAIL_PERSON, response.getError().getErrorMessage(), null);
+                        listener.onError(getId(), Request.DETAIL_USER, response.getError().getErrorMessage(), null);
                     }
-                    cancelDetailedCurrentPersonRequest();
+                    cancelDetailedCurrentUserRequest();
                 }
             }
         });
@@ -229,24 +229,24 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
      * Not supported via Facebook SDK
      */
     @Override
-    public void requestSocialPerson(String userId, OnRequestSocialPersonListener listener) {
-        throw new SocialNetworkException("requestSocialPerson isn't allowed for FacebookSocialNetwork");
+    public void requestSocialUser(String userId, OnRequestSocialUserListener listener) {
+        throw new SocialNetworkException("requestSocialUser isn't allowed for FacebookSocialNetwork");
     }
 
     /**
      * Not supported via Facebook SDK
      */
     @Override
-    public void requestSocialPersons(String[] userId, OnRequestSocialPersonsListener listener) {
-        throw new SocialNetworkException("requestSocialPersons isn't allowed for FacebookSocialNetwork");
+    public void requestSocialUsers(String[] userId, OnRequestSocialUsersListener listener) {
+        throw new SocialNetworkException("requestSocialUsers isn't allowed for FacebookSocialNetwork");
     }
 
     /**
      * Not supported via Facebook SDK
      */
     @Override
-    public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonListener listener) {
-        throw new SocialNetworkException("requestDetailedSocialPerson isn't allowed for FacebookSocialNetwork");
+    public void requestDetailedSocialUser(String userId, OnRequestDetailedSocialUserListener listener) {
+        throw new SocialNetworkException("requestDetailedSocialUser isn't allowed for FacebookSocialNetwork");
     }
 
     /**
@@ -290,7 +290,7 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
             public void onCompleted(JSONArray objects, GraphResponse response) {
                 if (isRegistered(listener)) {
                     if (response.getError() == null) {
-                        listener.onRequestFriendsSuccess(getId(), parsePersons(objects));
+                        listener.onRequestFriendsSuccess(getId(), parseUsers(objects));
                     } else {
                         listener.onError(getId(), Request.FRIENDS, response.getError().getErrorMessage(), null);
                     }
@@ -378,11 +378,11 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
         shareDialog.show(shareContent);
     }
 
-    private FacebookPerson parsePerson(JSONObject person) {
-        return GSON.fromJson(person.toString(), FacebookPerson.class);
+    private FacebookUser parseUser(JSONObject user) {
+        return GSON.fromJson(user.toString(), FacebookUser.class);
     }
 
-    private List<SocialPerson> parsePersons(JSONArray persons) {
-        return GSON.fromJson(persons.toString(), new TypeToken<List<FacebookPerson>>(){}.getType());
+    private List<SocialUser> parseUsers(JSONArray users) {
+        return GSON.fromJson(users.toString(), new TypeToken<List<FacebookUser>>(){}.getType());
     }
 }

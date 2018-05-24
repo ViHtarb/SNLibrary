@@ -43,7 +43,7 @@ import java.util.List;
  * Created by Viнt@rь on 13.04.2016
  */
 public class VKSocialNetwork extends SocialNetwork<VKAccessToken, VKAttachments> {
-    public static final int ID = 2;
+    public static final int ID = 3;
 
     private List<String> mPermissions;
 

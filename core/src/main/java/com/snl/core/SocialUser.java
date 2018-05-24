@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  * <p/>
- * Copyright (c) 2016. Viнt@rь
+ * Copyright (c) 2018. Viнt@rь
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,22 @@
  * SOFTWARE.
  */
 
-package com.snl.core.listener;
+package com.snl.core;
+
+import android.os.Parcelable;
 
 /**
- * Interface definition for a callback to be invoked when social user request complete.
- *
- * @deprecated Use {@link OnRequestSocialUserListener} instead.
+ * Base interface of {@link SocialNetwork} user
  */
-@Deprecated
-public interface OnRequestSocialPersonListener extends OnRequestSocialUserListener {
+public interface SocialUser extends Parcelable {
+
+    String getId();
+
+    String getName();
+
+    String getProfileURL();
+
+    String getAvatarURL();
+
+    String getEmail();
 }

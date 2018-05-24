@@ -35,13 +35,16 @@ import android.support.annotation.NonNull;
 import com.google.gson.Gson;
 import com.snl.core.listener.OnCheckIsFriendListener;
 import com.snl.core.listener.OnLoginListener;
-import com.snl.core.listener.OnShareListener;
 import com.snl.core.listener.OnRequestAddFriendListener;
 import com.snl.core.listener.OnRequestDetailedSocialPersonListener;
+import com.snl.core.listener.OnRequestDetailedSocialUserListener;
 import com.snl.core.listener.OnRequestFriendsListener;
 import com.snl.core.listener.OnRequestRemoveFriendListener;
 import com.snl.core.listener.OnRequestSocialPersonListener;
 import com.snl.core.listener.OnRequestSocialPersonsListener;
+import com.snl.core.listener.OnRequestSocialUserListener;
+import com.snl.core.listener.OnRequestSocialUsersListener;
+import com.snl.core.listener.OnShareListener;
 import com.snl.core.listener.base.SocialNetworkListener;
 
 import java.util.HashMap;
@@ -54,11 +57,36 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
 
     public enum Request {
         LOGIN,
-        PERSON,
-        DETAIL_PERSON,
-        SOCIAL_PERSON,
-        DETAIL_SOCIAL_PERSON,
-        SOCIAL_PERSONS,
+
+        /**
+         * @deprecated Use {@link Request#USER} instead.
+         */
+        @Deprecated PERSON,
+
+        /**
+         * @deprecated Use {@link Request#DETAIL_USER} instead.
+         */
+        @Deprecated DETAIL_PERSON,
+
+        /**
+         * @deprecated Use {@link Request#SOCIAL_USER} instead.
+         */
+        @Deprecated SOCIAL_PERSON,
+
+        /**
+         * @deprecated Use {@link Request#DETAIL_SOCIAL_USER} instead.
+         */
+        @Deprecated DETAIL_SOCIAL_PERSON,
+
+        /**
+         * @deprecated Use {@link Request#SOCIAL_USERS} instead.
+         */
+        @Deprecated SOCIAL_PERSONS,
+        USER,
+        DETAIL_USER,
+        SOCIAL_USER,
+        DETAIL_SOCIAL_USER,
+        SOCIAL_USERS,
         SHARE_CONTENT,
         CHECK_IS_FRIEND,
         FRIENDS,
@@ -73,7 +101,7 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
 
     private Context mContext;
 
-    public SocialNetwork(Application application) {
+    public SocialNetwork(@NonNull Application application) {
         mContext = application.getApplicationContext();
         application.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
     }
@@ -123,6 +151,7 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
     public abstract void logout();
 
     //////// REQUESTS //////////////
+
     /**
      * Login to <code>SocialNetwork</code> using global listener
      */
@@ -143,89 +172,207 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
     }
 
     /**
-     * Request current {@link SocialPerson}
+     * Request current {@link SocialUser}
      */
+    public void requestCurrentUser() {
+        requestCurrentUser(null);
+    }
+
+    /**
+     * Request current {@link SocialUser}
+     */
+    public void requestCurrentUser(OnRequestSocialUserListener listener) {
+        registerListener(Request.USER, listener);
+    }
+
+    /**
+     * Request detailed current {@link SocialUser}
+     * <p>
+     * Look for detailed users in <code>SocialNetwork`s</code> packages
+     */
+    public void requestDetailedCurrentUser() {
+        requestDetailedSocialUser(null);
+    }
+
+    /**
+     * Request detailed current {@link SocialUser}
+     * <p>
+     * Look for detailed users in <code>SocialNetwork`s</code> packages
+     */
+    public void requestDetailedCurrentUser(OnRequestDetailedSocialUserListener listener) {
+        registerListener(Request.DETAIL_USER, listener);
+    }
+
+    /**
+     * Request {@link SocialUser} by user id
+     *
+     * @param userId user id in <code>SocialNetwork</code>
+     */
+    public void requestSocialUser(String userId) {
+        requestSocialUser(userId, null);
+    }
+
+    /**
+     * Request {@link SocialUser} by user id
+     *
+     * @param userId user id in <code>SocialNetwork</code>
+     */
+    public void requestSocialUser(String userId, OnRequestSocialUserListener listener) {
+        registerListener(Request.SOCIAL_USER, listener);
+    }
+
+    /**
+     * Request {@link SocialUser}`s list by user ids array
+     *
+     * @param ids array of user ids in <code>SocialNetwork</code>
+     */
+    public void requestSocialUsers(String[] ids) {
+        requestSocialUsers(ids, null);
+    }
+
+    /**
+     * Request {@link SocialUser}`s list by user ids array
+     *
+     * @param ids array of ids in <code>SocialNetwork</code>
+     */
+    public void requestSocialUsers(String[] ids, OnRequestSocialUsersListener listener) {
+        registerListener(Request.SOCIAL_USERS, listener);
+    }
+
+    /**
+     * Request detailed {@link SocialUser} by user id
+     * <p>
+     * Look for detailed users in <code>SocialNetwork</code> packages
+     *
+     * @param userId id in <code>SocialNetwork</code>
+     */
+    public void requestDetailedSocialUser(String userId) {
+        requestDetailedSocialUser(userId, null);
+    }
+
+    /**
+     * Request detailed {@link SocialUser} by user id
+     * <p>
+     * Look for detailed users in <code>SocialNetwork</code> packages.
+     *
+     * @param userId id in <code>SocialNetwork</code>
+     */
+    public void requestDetailedSocialUser(String userId, OnRequestDetailedSocialUserListener listener) {
+        registerListener(Request.DETAIL_SOCIAL_USER, listener);
+    }
+
+    /**
+     * Request current {@link SocialPerson}
+     *
+     * @deprecated Use {@link #requestCurrentUser()} instead.
+     */
+    @Deprecated
     public void requestCurrentPerson() {
-        requestCurrentPerson(null);
+        requestCurrentUser();
     }
 
     /**
      * Request current {@link SocialPerson}
+     *
+     * @deprecated Use {@link #requestCurrentUser(OnRequestSocialUserListener)} instead.
      */
+    @Deprecated
     public void requestCurrentPerson(OnRequestSocialPersonListener listener) {
-        registerListener(Request.PERSON, listener);
+        requestCurrentUser(listener);
     }
 
     /**
      * Request detailed current {@link SocialPerson}
+     * <p>
      * Look for detailed persons in <code>SocialNetwork`s</code> packages
+     *
+     * @deprecated Use {@link #requestDetailedCurrentUser()} instead.
      */
+    @Deprecated
     public void requestDetailedCurrentPerson() {
-        requestDetailedSocialPerson(null);
+        requestDetailedCurrentUser();
     }
 
     /**
      * Request detailed current {@link SocialPerson}
+     * <p>
      * Look for detailed persons in <code>SocialNetwork`s</code> packages
+     *
+     * @deprecated Use {@link #requestDetailedCurrentUser(OnRequestDetailedSocialUserListener)} instead.
      */
+    @Deprecated
     public void requestDetailedCurrentPerson(OnRequestDetailedSocialPersonListener listener) {
-        registerListener(Request.DETAIL_PERSON, listener);
+        requestDetailedCurrentUser(listener);
     }
 
     /**
      * Request {@link SocialPerson} by user id
      *
      * @param userId user id in <code>SocialNetwork</code>
+     * @deprecated Use {@link #requestSocialUser(String)} instead.
      */
+    @Deprecated
     public void requestSocialPerson(String userId) {
-        requestSocialPerson(userId, null);
+        requestSocialUser(userId);
     }
 
     /**
      * Request {@link SocialPerson} by user id
      *
      * @param userId user id in <code>SocialNetwork</code>
+     * @deprecated Use {@link #requestSocialUser(String, OnRequestSocialUserListener)} instead.
      */
+    @Deprecated
     public void requestSocialPerson(String userId, OnRequestSocialPersonListener listener) {
-        registerListener(Request.SOCIAL_PERSON, listener);
+        requestSocialUser(userId, listener);
     }
 
     /**
      * Request {@link SocialPerson}`s list by user ids array
      *
      * @param ids array of user ids in <code>SocialNetwork</code>
+     * @deprecated Use {@link #requestSocialUsers(String[])} instead.
      */
+    @Deprecated
     public void requestSocialPersons(String[] ids) {
-        requestSocialPersons(ids, null);
+        requestSocialUsers(ids);
     }
 
     /**
      * Request {@link SocialPerson}`s list by user ids array
      *
      * @param ids array of ids in <code>SocialNetwork</code>
+     * @deprecated Use {@link #requestSocialUsers(String[], OnRequestSocialUsersListener)} instead.
      */
+    @Deprecated
     public void requestSocialPersons(String[] ids, OnRequestSocialPersonsListener listener) {
-        registerListener(Request.SOCIAL_PERSONS, listener);
+        requestSocialUsers(ids, listener);
     }
 
     /**
      * Request detailed {@link SocialPerson} by user id
+     * <p>
      * Look for detailed persons in <code>SocialNetwork</code> packages
      *
      * @param userId id in <code>SocialNetwork</code>
+     * @deprecated Use {@link #requestDetailedSocialUser(String)} instead.
      */
+    @Deprecated
     public void requestDetailedSocialPerson(String userId) {
-        requestDetailedSocialPerson(userId, null);
+        requestDetailedSocialUser(userId);
     }
 
     /**
      * Request detailed {@link SocialPerson} by user id
+     * <p>
      * Look for detailed persons in <code>SocialNetwork</code> packages.
      *
      * @param userId id in <code>SocialNetwork</code>
+     * @deprecated Use {@link #requestDetailedSocialUser(String, OnRequestDetailedSocialUserListener)} instead.
      */
+    @Deprecated
     public void requestDetailedSocialPerson(String userId, OnRequestDetailedSocialPersonListener listener) {
-        registerListener(Request.DETAIL_SOCIAL_PERSON, listener);
+        requestDetailedSocialUser(userId, listener);
     }
 
     /**
@@ -322,38 +469,88 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
     }
 
     /**
-     * Cancel {@link Request#PERSON} request
+     * Cancel {@link Request#USER} request
      */
+    public void cancelCurrentUserRequest() {
+        cancelRequest(Request.USER);
+    }
+
+    /**
+     * Cancel {@link Request#DETAIL_USER} request
+     */
+    public void cancelDetailedCurrentUserRequest() {
+        cancelRequest(Request.DETAIL_USER);
+    }
+
+    /**
+     * Cancel {@link Request#SOCIAL_USER} request
+     */
+    public void cancelSocialUserRequest() {
+        cancelRequest(Request.SOCIAL_USER);
+    }
+
+    /**
+     * Cancel {@link Request#SOCIAL_USERS} request
+     */
+    public void cancelSocialUsersRequest() {
+        cancelRequest(Request.SOCIAL_USERS);
+    }
+
+    /**
+     * Cancel {@link Request#DETAIL_SOCIAL_USER} request
+     */
+    public void cancelDetailedSocialUserRequest() {
+        cancelRequest(Request.DETAIL_SOCIAL_USER);
+    }
+
+    /**
+     * Cancel {@link Request#PERSON} request
+     *
+     * @deprecated Use {@link #cancelCurrentUserRequest()} instead.
+     */
+    @Deprecated
     public void cancelCurrentPersonRequest() {
-        cancelRequest(Request.PERSON);
+        cancelCurrentUserRequest();
     }
 
     /**
      * Cancel {@link Request#DETAIL_PERSON} request
+     *
+     * @deprecated Use {@link #cancelDetailedCurrentUserRequest()} instead.
      */
+    @Deprecated
     public void cancelDetailedCurrentPersonRequest() {
-        cancelRequest(Request.DETAIL_PERSON);
+        cancelDetailedCurrentUserRequest();
     }
 
     /**
      * Cancel {@link Request#SOCIAL_PERSON} request
+     *
+     * @deprecated Use {@link #cancelSocialUserRequest()} instead.
      */
+    @Deprecated
     public void cancelSocialPersonRequest() {
-        cancelRequest(Request.SOCIAL_PERSON);
+        cancelSocialUserRequest();
     }
 
     /**
      * Cancel {@link Request#SOCIAL_PERSONS} request
+     *
+     * @deprecated Use {@link #cancelSocialUsersRequest()} instead.
      */
+    @Deprecated
     public void cancelSocialPersonsRequest() {
-        cancelRequest(Request.SOCIAL_PERSONS);
+        cancelSocialUsersRequest();
     }
 
     /**
      * Cancel {@link Request#DETAIL_SOCIAL_PERSON} request
+     *
+     * @deprecated Use {@link #cancelDetailedSocialUserRequest()} instead.
      */
+    @Deprecated
     public void cancelDetailedSocialPersonRequest() {
-        cancelRequest(Request.DETAIL_SOCIAL_PERSON);
+        cancelDetailedSocialUserRequest();
     }
 
     /**
@@ -399,8 +596,8 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
     }
 
     //////////////////// UTIL METHODS ////////////////////
+
     /**
-     * Check is {@link Request} registered
      * @return Is {@link Request} registered
      */
     protected boolean isRegistered(Request request) {
@@ -408,7 +605,6 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
     }
 
     /**
-     * Check is {@link SocialNetworkListener} registered
      * @return Is {@link SocialNetworkListener} registered
      */
     protected boolean isRegistered(SocialNetworkListener listener) {
@@ -417,10 +613,12 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
 
     /**
      * Get {@link SocialNetworkListener} by {@link Request}
+     *
      * @return {@link SocialNetworkListener}
      */
-    protected SocialNetworkListener getListener(Request request) {
-        return mLocalListeners.get(request);
+    @SuppressWarnings("unchecked")
+    protected <T extends SocialNetworkListener> T getListener(@NonNull Request request) {
+        return (T) mLocalListeners.get(request);
     }
 
     /**
@@ -436,6 +634,7 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
 
     /**
      * Cancel {@link Request}
+     *
      * @param request to be canceled
      */
     protected void cancelRequest(@NonNull Request request) {
@@ -443,6 +642,7 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
     }
 
     //////////////////// SETTERS FOR GLOBAL LISTENERS ////////////////////
+
     /**
      * Register a callback to be invoked when login complete.
      *
@@ -453,50 +653,111 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
     }
 
     /**
-     * Register a callback to be invoked when {@link #requestCurrentPerson()} complete.
+     * Register a callback to be invoked when {@link #requestCurrentUser()} complete.
      *
      * @param listener the callback that will run
      */
+    public void setOnRequestCurrentUserListener(OnRequestSocialUserListener listener) {
+        mGlobalListeners.put(Request.USER, listener);
+    }
+
+    /**
+     * Register a callback to be invoked when {@link #requestDetailedCurrentUser()} complete.
+     * <p>
+     * Look for detailed users in <code>SocialNetwork`s</code> packages.
+     *
+     * @param listener the callback that will run
+     */
+    public void setOnRequestDetailedCurrentUserListener(OnRequestDetailedSocialUserListener listener) {
+        mGlobalListeners.put(Request.DETAIL_USER, listener);
+    }
+
+    /**
+     * Register a callback to be invoked when {@link #requestSocialUser(String)} complete.
+     *
+     * @param listener the callback that will run
+     */
+    public void setOnRequestSocialUserListener(OnRequestSocialUserListener listener) {
+        mGlobalListeners.put(Request.SOCIAL_USER, listener);
+    }
+
+    /**
+     * Register a callback to be invoked when {@link #requestDetailedSocialUser(String)} complete.
+     * <p>
+     * Look for detailed users in <code>SocialNetwork`s</code>  packages.
+     *
+     * @param listener the callback that will run
+     */
+    public void setOnRequestDetailedSocialUserListener(OnRequestDetailedSocialUserListener listener) {
+        mGlobalListeners.put(Request.DETAIL_SOCIAL_USER, listener);
+    }
+
+    /**
+     * Register a callback to be invoked when {@link #requestSocialUsers(String[])} complete.
+     *
+     * @param listener the callback that will run
+     */
+    public void setOnRequestSocialUsersListener(OnRequestSocialUsersListener listener) {
+        mGlobalListeners.put(Request.SOCIAL_USERS, listener);
+    }
+
+    /**
+     * Register a callback to be invoked when {@link #requestCurrentPerson()} complete.
+     *
+     * @param listener the callback that will run
+     * @deprecated Use {@link #setOnRequestCurrentUserListener(OnRequestSocialUserListener)} instead.
+     */
+    @Deprecated
     public void setOnRequestCurrentPersonListener(OnRequestSocialPersonListener listener) {
-        mGlobalListeners.put(Request.PERSON, listener);
+        setOnRequestCurrentUserListener(listener);
     }
 
     /**
      * Register a callback to be invoked when {@link #requestDetailedCurrentPerson()} complete.
+     * <p>
      * Look for detailed persons in <code>SocialNetwork`s</code> packages.
      *
      * @param listener the callback that will run
+     * @deprecated Use {@link #setOnRequestDetailedCurrentUserListener(OnRequestDetailedSocialUserListener)} instead.
      */
+    @Deprecated
     public void setOnRequestDetailedCurrentPersonListener(OnRequestDetailedSocialPersonListener listener) {
-        mGlobalListeners.put(Request.DETAIL_PERSON, listener);
+        setOnRequestDetailedCurrentUserListener(listener);
     }
 
     /**
      * Register a callback to be invoked when {@link #requestSocialPerson(String)} complete.
      *
      * @param listener the callback that will run
+     * @deprecated Use {@link #setOnRequestSocialUserListener(OnRequestSocialUserListener)} instead.
      */
+    @Deprecated
     public void setOnRequestSocialPersonListener(OnRequestSocialPersonListener listener) {
-        mGlobalListeners.put(Request.SOCIAL_PERSON, listener);
+        setOnRequestSocialUserListener(listener);
     }
 
     /**
      * Register a callback to be invoked when {@link #requestDetailedSocialPerson(String)} complete.
+     * <p>
      * Look for detailed persons in <code>SocialNetwork`s</code>  packages.
      *
      * @param listener the callback that will run
+     * @deprecated Use {@link #setOnRequestDetailedSocialUserListener(OnRequestDetailedSocialUserListener)} instead.
      */
+    @Deprecated
     public void setOnRequestDetailedSocialPersonListener(OnRequestDetailedSocialPersonListener listener) {
-        mGlobalListeners.put(Request.DETAIL_SOCIAL_PERSON, listener);
+        setOnRequestDetailedSocialUserListener(listener);
     }
 
     /**
      * Register a callback to be invoked when {@link #requestSocialPersons(String[])} complete.
      *
      * @param listener the callback that will run
+     * @deprecated Use {@link #setOnRequestSocialUsersListener(OnRequestSocialUsersListener)} instead.
      */
+    @Deprecated
     public void setOnRequestSocialPersonsListener(OnRequestSocialPersonsListener listener) {
-        mGlobalListeners.put(Request.SOCIAL_PERSONS, listener);
+        setOnRequestSocialUsersListener(listener);
     }
 
     /**

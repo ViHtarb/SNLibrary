@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  * <p/>
- * Copyright (c) 2016. Viнt@rь
+ * Copyright (c) 2018. Viнt@rь
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,21 @@
 
 package com.snl.core.listener;
 
+import com.snl.core.SocialUser;
+import com.snl.core.listener.base.SocialNetworkListener;
+
+import java.util.List;
+
 /**
- * Interface definition for a callback to be invoked when social user request complete.
- *
- * @deprecated Use {@link OnRequestSocialUserListener} instead.
+ * Interface definition for a callback to be invoked when array of social user request complete.
  */
-@Deprecated
-public interface OnRequestSocialPersonListener extends OnRequestSocialUserListener {
+public interface OnRequestSocialUsersListener extends SocialNetworkListener {
+
+    /**
+     * Called when array of social person request complete.
+     *
+     * @param socialNetworkId id of social network where request was complete
+     * @param socialUsers     List of requested {@link SocialUser}
+     */
+    void onRequestSocialUsersSuccess(int socialNetworkId, List<SocialUser> socialUsers);
 }

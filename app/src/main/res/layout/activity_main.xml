@@ -8,6 +8,12 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="FB"
-        android:id="@+id/fb_button"/>
+        android:text="FB Login"
+        android:id="@+id/login_button"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="FB Friends"
+        android:id="@+id/friends_button"/>
 </LinearLayout>

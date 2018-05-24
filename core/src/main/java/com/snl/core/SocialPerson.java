@@ -24,20 +24,12 @@
 
 package com.snl.core;
 
-import android.os.Parcelable;
-
 /**
  * Base interface of {@link SocialNetwork} person
+ *
+ * @deprecated Use {@link SocialUser} instead.
  */
-public interface SocialPerson extends Parcelable {
+@Deprecated
+public interface SocialPerson extends SocialUser {
 
-    String getId();
-
-    String getName();
-
-    String getProfileURL();
-
-    String getAvatarURL();
-
-    String getEmail();
 }
