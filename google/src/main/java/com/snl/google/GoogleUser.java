@@ -24,12 +24,115 @@
 
 package com.snl.google;
 
+import android.os.Parcel;
+import android.support.annotation.NonNull;
+
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.snl.core.SocialUser;
 
 /**
  * Google {@link SocialUser} implementation
- *
- * TODO
  */
-public class GoogleUser/* implements SocialUser*/ {
+public class GoogleUser implements SocialUser {
+
+    private static final Creator<GoogleUser> CREATOR = new Creator<GoogleUser>() {
+        public GoogleUser createFromParcel(Parcel in) {
+            return new GoogleUser(in);
+        }
+
+        public GoogleUser[] newArray(int size) {
+            return new GoogleUser[size];
+        }
+    };
+
+    private String mId; // Id of social person from chosen social network.
+    private String mName; // Name of social person from social network.
+    private String mProfileURL; // Profile URL of social person from social network.
+    private String mAvatarURL; // Avatar URL of social person from social network.
+    private String mEmail; // Email of social person from social network if exist.
+    private String mFirstName; // First mName of social person
+    private String mLastName; // Last name of social person
+
+    GoogleUser(@NonNull GoogleSignInAccount account) {
+        mId = account.getId();
+        mName = account.getDisplayName();
+        mProfileURL = "https://plus.google.com/u/0/" + account.getId();
+        if (account.getPhotoUrl() != null) {
+            mAvatarURL = account.getPhotoUrl().toString();
+        }
+        mEmail = account.getEmail();
+        mFirstName = account.getGivenName();
+        mLastName = account.getFamilyName();
+    }
+
+    private GoogleUser(Parcel in) {
+        mId = in.readString();
+        mName = in.readString();
+        mProfileURL = in.readString();
+        mEmail = in.readString();
+        mFirstName = in.readString();
+        mLastName = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mId);
+        dest.writeString(mName);
+        dest.writeString(mProfileURL);
+        dest.writeString(mEmail);
+        dest.writeString(mFirstName);
+        dest.writeString(mLastName);
+    }
+
+    @Override
+    public String toString() {
+        return "GoogleUser{" +
+                "id='" + getId() + '\'' +
+                ", name='" + getName() + '\'' +
+                ", profileURL='" + getProfileURL() + '\'' +
+                ", avatarURL='" + getAvatarURL() + '\'' +
+                ", email='" + getEmail() + '\'' +
+                ", firstName='" + getFirstName() + '\'' +
+                ", lastName='" + getLastName() + '\'' +
+                '}';
+    }
+
+    @Override
+    public String getId() {
+        return mId;
+    }
+
+    @Override
+    public String getName() {
+        return mName;
+    }
+
+    @Override
+    public String getProfileURL() {
+        return mProfileURL;
+    }
+
+    @Override
+    public String getAvatarURL() {
+        return mAvatarURL;
+    }
+
+    @Override
+    public String getEmail() {
+        return mEmail;
+    }
+
+    public String getFirstName() {
+        return mFirstName;
+    }
+
+    public String getLastName() {
+        return mLastName;
+    }
+
 }

@@ -33,10 +33,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.snl.core.AccessToken;
 import com.snl.core.SocialNetwork;
 import com.snl.core.listener.OnLoginListener;
+import com.snl.core.listener.OnRequestSocialUserListener;
 
 /**
  * Created by Viнt@rь on 16.05.2018
@@ -48,7 +51,8 @@ public class GoogleSocialNetwork extends SocialNetwork<AccessToken, ShareContent
 
     private final GoogleSignInClient mSignInClient;
 
-   //private GoogleSignInAccount mAccount;
+    private GoogleSignInAccount mAccount;
+    private AccessToken mAccessToken;
 
     public GoogleSocialNetwork(@NonNull Application application, @NonNull GoogleSignInOptions googleSignInOptions) {
         super(application);
@@ -64,17 +68,20 @@ public class GoogleSocialNetwork extends SocialNetwork<AccessToken, ShareContent
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-
             if (isRegistered(Request.LOGIN)) {
                 OnLoginListener listener = getListener(Request.LOGIN);
-                //try {
-                    //mAccount = task.getResult(ApiException.class); // TODO
+
+                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                try {
+                    mAccount = task.getResult(ApiException.class);
+                    mAccessToken = new AccessToken(mAccount.getIdToken(), null);
+
                     listener.onLoginSuccess(getId());
-                //} catch (ApiException e) {
-                    //String message = GoogleSignInStatusCodes.getStatusCodeString(e.getStatusCode());
-                    //listener.onError(getId(), Request.LOGIN, message, null);
-                //}
+                } catch (ApiException e) {
+                    String message = GoogleSignInStatusCodes.getStatusCodeString(e.getStatusCode());
+                    listener.onError(getId(), Request.LOGIN, message, null);
+                }
+                cancelLoginRequest();
             }
         }
     }
@@ -86,26 +93,17 @@ public class GoogleSocialNetwork extends SocialNetwork<AccessToken, ShareContent
 
     @Override
     public boolean isConnected() {
-        return false;
+        return mAccessToken != null; // TODO
     }
 
     @Override
     public AccessToken getAccessToken() {
-/*        String scope = "oauth2:profile email";
-        try {
-            return new AccessToken(GoogleAuthUtil.getToken(getContext(), mAccount.getAccount(), scope), null);
-        } catch (Exception e) {
-            e.printStackTrace();
-*//*
-        } catch (IOException e) {
-        } catch (GoogleAuthException e) {
-*//*
-        }*/
-        return null;
+        return mAccessToken;
     }
 
     @Override
     public void logout() {
+        mAccessToken = null;
         mSignInClient.signOut();
     }
 
@@ -113,5 +111,21 @@ public class GoogleSocialNetwork extends SocialNetwork<AccessToken, ShareContent
     public void requestLogin(OnLoginListener listener) {
         super.requestLogin(listener);
         getContext().startActivityForResult(mSignInClient.getSignInIntent(), RC_SIGN_IN);
+    }
+
+    @Override
+    public void requestCurrentUser(OnRequestSocialUserListener listener) {
+        super.requestCurrentUser(listener);
+
+        if (!isConnected()) {
+            if (isRegistered(listener)) {
+                listener.onError(getId(), Request.USER, "Please login first", null);
+                cancelCurrentUserRequest();
+            }
+            return;
+        }
+
+        GoogleUser googleUser = new GoogleUser(mAccount);
+        listener.onRequestSocialUserSuccess(getId(), googleUser);
     }
 }

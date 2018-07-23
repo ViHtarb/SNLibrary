@@ -37,12 +37,10 @@ import com.snl.core.SocialNetwork;
 import com.snl.core.SocialNetworkManager;
 import com.snl.core.SocialUser;
 import com.snl.core.listener.OnLoginListener;
-import com.snl.core.listener.OnRequestFriendsListener;
+import com.snl.core.listener.OnRequestSocialUserListener;
 import com.snl.facebook.FacebookPermissions;
 import com.snl.facebook.FacebookSocialNetwork;
 import com.snl.google.GoogleSocialNetwork;
-
-import java.util.List;
 
 /**
  * Created by Viнt@rь on 28.11.2015
@@ -58,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
             SocialNetworkManager.register(new FacebookSocialNetwork(getApplication(), FacebookPermissions.getPermissions()));
 
             GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken("852514138494-qujmugi7qo7k2f0p8lmc0trni3maq5va.apps.googleusercontent.com")
                     .requestEmail()
                     .requestProfile()
                     .build();
@@ -106,7 +105,22 @@ public class MainActivity extends AppCompatActivity {
         friendsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                facebookSocialNetwork.requestFriends(new OnRequestFriendsListener() {
+                googleSocialNetwork.requestCurrentUser(new OnRequestSocialUserListener() {
+                    @Override
+                    public void onRequestSocialUserSuccess(int socialNetworkId, SocialUser socialUser) {
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("user", socialUser);
+
+                        SocialUser user = bundle.getParcelable("user");
+                        Log.d("TEST", user.toString());
+                    }
+
+                    @Override
+                    public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
+
+                    }
+                });
+                /*facebookSocialNetwork.requestFriends(new OnRequestFriendsListener() {
 
                     @Override
                     public void onRequestFriendsSuccess(int socialNetworkId, List<SocialUser> socialUsers) {
@@ -118,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
 
                     }
-                });
+                });*/
             }
         });
     }

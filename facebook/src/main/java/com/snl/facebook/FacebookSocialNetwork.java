@@ -68,6 +68,8 @@ import java.util.List;
 
 /**
  * Created by Viнt@rь on 28.11.2015
+ *
+ * Facebook social network implementation
  */
 public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareContent> {
     public static final int ID = 1;

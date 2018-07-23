@@ -27,12 +27,16 @@ package com.snl.core.callback;
 /**
  * Interface definition for a callback to be invoked when login complete.
  */
+/*
 public interface LoginCallback extends Callback {
 
-    /**
+    */
+/**
      * Called when login complete.
      *
      * @param socialNetworkId id of social network where request was complete
-     */
+     *//*
+
     void onLoginSuccess(int socialNetworkId);
 }
+*/

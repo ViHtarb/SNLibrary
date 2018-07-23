@@ -24,20 +24,23 @@
 
 package com.snl.core.callback;
 
-import com.snl.core.SocialNetwork;
-
 /**
  * Base interface definition for a callback to be invoked when any social network request complete.
  */
+/*
+@RestrictTo(LIBRARY)
 public interface Callback {
 
-    /**
+    */
+/**
      * Called when {@link SocialNetwork} request complete with error.
      *
      * @param socialNetworkId id of social network where request was complete with error
      * @param request         request where occurred error
      * @param errorMessage    error message where request was complete with error
      * @param data            data of social network where request was complete with error
-     */
+     *//*
+
     void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data);
 }
+*/

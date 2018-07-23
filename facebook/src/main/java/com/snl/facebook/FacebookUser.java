@@ -36,7 +36,7 @@ import java.io.Serializable;
  */
 public class FacebookUser implements SocialUser {
 
-    public static final Creator<FacebookUser> CREATOR = new Creator<FacebookUser>() {
+    private static final Creator<FacebookUser> CREATOR = new Creator<FacebookUser>() {
         public FacebookUser createFromParcel(Parcel in) {
             return new FacebookUser(in);
         }
@@ -82,7 +82,7 @@ public class FacebookUser implements SocialUser {
     @SerializedName("picture")
     private Avatar mAvatar; // avatar data from /me/invitable_friends graph request
 
-    protected FacebookUser(Parcel in) { // TODO make it private when FacebookPerson will be removed
+    FacebookUser(Parcel in) { // TODO make it private when FacebookPerson will be removed
         mId = in.readString();
         mName = in.readString();
         mProfileURL = in.readString();
@@ -118,11 +118,11 @@ public class FacebookUser implements SocialUser {
 
     @Override
     public String toString() {
-        return "FacebookPerson{" +
+        return "FacebookUser{" +
                 "id='" + mId + '\'' +
                 ", name='" + mName + '\'' +
-                ", avatarURL='" + getAvatarURL() + '\'' +
                 ", profileURL='" + mProfileURL + '\'' +
+                ", avatarURL='" + getAvatarURL() + '\'' +
                 ", email='" + mEmail + '\'' +
                 ", firstName='" + mFirstName + '\'' +
                 ", middleName='" + mMiddleName + '\'' +

@@ -82,6 +82,7 @@ public abstract class SocialNetwork<AccessToken, ShareContent> {
          * @deprecated Use {@link Request#SOCIAL_USERS} instead.
          */
         @Deprecated SOCIAL_PERSONS,
+        
         USER,
         DETAIL_USER,
         SOCIAL_USER,
