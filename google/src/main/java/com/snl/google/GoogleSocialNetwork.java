@@ -58,6 +58,10 @@ public class GoogleSocialNetwork extends SocialNetwork<AccessToken, ShareContent
         super(application);
 
         mSignInClient = GoogleSignIn.getClient(application, googleSignInOptions);
+        mAccount = GoogleSignIn.getLastSignedInAccount(application);
+        if (mAccount != null) {
+            mAccessToken = new AccessToken(mAccount.getIdToken(), null);
+        }
     }
 
     @Override
@@ -93,7 +97,7 @@ public class GoogleSocialNetwork extends SocialNetwork<AccessToken, ShareContent
 
     @Override
     public boolean isConnected() {
-        return mAccessToken != null; // TODO
+        return mAccessToken != null;
     }
 
     @Override
@@ -103,6 +107,7 @@ public class GoogleSocialNetwork extends SocialNetwork<AccessToken, ShareContent
 
     @Override
     public void logout() {
+        mAccount = null;
         mAccessToken = null;
         mSignInClient.signOut();
     }
@@ -125,7 +130,7 @@ public class GoogleSocialNetwork extends SocialNetwork<AccessToken, ShareContent
             return;
         }
 
-        GoogleUser googleUser = new GoogleUser(mAccount);
-        listener.onRequestSocialUserSuccess(getId(), googleUser);
+        //GoogleUser googleUser = new GoogleUser(mAccount);
+        //listener.onRequestSocialUserSuccess(getId(), googleUser);
     }
 }
