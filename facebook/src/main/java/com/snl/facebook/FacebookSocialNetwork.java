@@ -36,7 +36,6 @@ import com.facebook.FacebookActivity;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.internal.Utility;
 import com.facebook.login.LoginManager;
@@ -179,17 +178,14 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
 
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id, name, link, email");
-        GraphRequest request = GraphRequest.newMeRequest(getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-            @Override
-            public void onCompleted(JSONObject object, GraphResponse response) {
-                if (isRegistered(listener)) {
-                    if (response.getError() == null) {
-                        listener.onRequestSocialUserSuccess(getId(), parseUser(object));
-                    } else {
-                        listener.onError(getId(), Request.USER, response.getError().getErrorMessage(), null);
-                    }
-                    cancelCurrentUserRequest();
+        GraphRequest request = GraphRequest.newMeRequest(getAccessToken(), (object, response) -> {
+            if (isRegistered(listener)) {
+                if (response.getError() == null) {
+                    listener.onRequestSocialUserSuccess(getId(), parseUser(object));
+                } else {
+                    listener.onError(getId(), Request.USER, response.getError().getErrorMessage(), null);
                 }
+                cancelCurrentUserRequest();
             }
         });
         request.setParameters(parameters);
@@ -211,17 +207,14 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
 
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id, name, first_name, middle_name, last_name, link, email, gender, birthday, verified");
-        GraphRequest request = GraphRequest.newMeRequest(getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-            @Override
-            public void onCompleted(JSONObject object, GraphResponse response) {
-                if (isRegistered(listener)) {
-                    if (response.getError() == null) {
-                        listener.onRequestDetailedSocialUserSuccess(getId(), parseUser(object));
-                    } else {
-                        listener.onError(getId(), Request.DETAIL_USER, response.getError().getErrorMessage(), null);
-                    }
-                    cancelDetailedCurrentUserRequest();
+        GraphRequest request = GraphRequest.newMeRequest(getAccessToken(), (object, response) -> {
+            if (isRegistered(listener)) {
+                if (response.getError() == null) {
+                    listener.onRequestDetailedSocialUserSuccess(getId(), parseUser(object));
+                } else {
+                    listener.onError(getId(), Request.DETAIL_USER, response.getError().getErrorMessage(), null);
                 }
+                cancelDetailedCurrentUserRequest();
             }
         });
         request.setParameters(parameters);
@@ -288,17 +281,14 @@ public class FacebookSocialNetwork extends SocialNetwork<AccessToken, ShareConte
 
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id, name, link, email");
-        GraphRequest request = GraphRequest.newMyFriendsRequest(getAccessToken(), new GraphRequest.GraphJSONArrayCallback() {
-            @Override
-            public void onCompleted(JSONArray objects, GraphResponse response) {
-                if (isRegistered(listener)) {
-                    if (response.getError() == null) {
-                        listener.onRequestFriendsSuccess(getId(), parseUsers(objects));
-                    } else {
-                        listener.onError(getId(), Request.FRIENDS, response.getError().getErrorMessage(), null);
-                    }
-                    cancelFriendsRequest();
+        GraphRequest request = GraphRequest.newMyFriendsRequest(getAccessToken(), (objects, response) -> {
+            if (isRegistered(listener)) {
+                if (response.getError() == null) {
+                    listener.onRequestFriendsSuccess(getId(), parseUsers(objects));
+                } else {
+                    listener.onError(getId(), Request.FRIENDS, response.getError().getErrorMessage(), null);
                 }
+                cancelFriendsRequest();
             }
         });
         request.setParameters(parameters);
