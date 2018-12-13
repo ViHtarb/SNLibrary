@@ -25,10 +25,11 @@
 package com.snl.google;
 
 import android.os.Parcel;
-import android.support.annotation.NonNull;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.snl.core.SocialUser;
+
+import androidx.annotation.NonNull;
 
 /**
  * Google {@link SocialUser} implementation
@@ -75,34 +76,6 @@ public class GoogleUser implements SocialUser {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mId);
-        dest.writeString(mName);
-        dest.writeString(mProfileURL);
-        dest.writeString(mEmail);
-        dest.writeString(mFirstName);
-        dest.writeString(mLastName);
-    }
-
-    @Override
-    public String toString() {
-        return "GoogleUser{" +
-                "id='" + getId() + '\'' +
-                ", name='" + getName() + '\'' +
-                ", profileURL='" + getProfileURL() + '\'' +
-                ", avatarURL='" + getAvatarURL() + '\'' +
-                ", email='" + getEmail() + '\'' +
-                ", firstName='" + getFirstName() + '\'' +
-                ", lastName='" + getLastName() + '\'' +
-                '}';
-    }
-
-    @Override
     public String getId() {
         return mId;
     }
@@ -135,4 +108,31 @@ public class GoogleUser implements SocialUser {
         return mLastName;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mId);
+        dest.writeString(mName);
+        dest.writeString(mProfileURL);
+        dest.writeString(mEmail);
+        dest.writeString(mFirstName);
+        dest.writeString(mLastName);
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "GoogleUser:{" +
+                "id='" + mId + "', " +
+                "name='" + mName + "', " +
+                "profileURL='" + mProfileURL + "', " +
+                "avatarURL='" + mAvatarURL + "', " +
+                "email='" + mEmail + "', " +
+                "firstName='" + mFirstName + "', " +
+                "lastName='" + mLastName + "'}";
+    }
 }

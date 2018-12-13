@@ -31,6 +31,8 @@ import com.snl.core.SocialUser;
 
 import java.io.Serializable;
 
+import androidx.annotation.NonNull;
+
 /**
  * Facebook detailed {@link SocialUser} implementation
  */
@@ -97,43 +99,6 @@ public class FacebookUser implements SocialUser {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mId);
-        dest.writeString(mName);
-        dest.writeString(mProfileURL);
-        dest.writeString(mEmail);
-        dest.writeString(mFirstName);
-        dest.writeString(mMiddleName);
-        dest.writeString(mLastName);
-        dest.writeString(mGender);
-        dest.writeString(mBirthday);
-        dest.writeString(isVerified);
-        dest.writeSerializable(mAvatar);
-    }
-
-    @Override
-    public String toString() {
-        return "FacebookUser{" +
-                "id='" + mId + '\'' +
-                ", name='" + mName + '\'' +
-                ", profileURL='" + mProfileURL + '\'' +
-                ", avatarURL='" + getAvatarURL() + '\'' +
-                ", email='" + mEmail + '\'' +
-                ", firstName='" + mFirstName + '\'' +
-                ", middleName='" + mMiddleName + '\'' +
-                ", lastName='" + mLastName + '\'' +
-                ", gender='" + mGender + '\'' +
-                ", birthday='" + mBirthday + '\'' +
-                ", verified='" + isVerified + '\'' +
-                '}';
-    }
-
-    @Override
     public String getId() {
         return mId;
     }
@@ -180,6 +145,43 @@ public class FacebookUser implements SocialUser {
 
     public String isVerified() {
         return isVerified;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mId);
+        dest.writeString(mName);
+        dest.writeString(mProfileURL);
+        dest.writeString(mEmail);
+        dest.writeString(mFirstName);
+        dest.writeString(mMiddleName);
+        dest.writeString(mLastName);
+        dest.writeString(mGender);
+        dest.writeString(mBirthday);
+        dest.writeString(isVerified);
+        dest.writeSerializable(mAvatar);
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "FacebookUser:{" +
+                "id='" + mId + "', " +
+                "name='" + mName + "', " +
+                "profileURL='" + mProfileURL + "', " +
+                "avatarURL='" + getAvatarURL() + "', " +
+                "email='" + mEmail + "', " +
+                "firstName='" + mFirstName + "', " +
+                "middleName='" + mMiddleName + "', " +
+                "lastName='" + mLastName + "', " +
+                "gender='" + mGender + "', " +
+                "birthday='" + mBirthday + "', " +
+                "verified='" + isVerified + "'}";
     }
 
     private static final class Avatar implements Serializable {

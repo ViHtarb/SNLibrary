@@ -26,7 +26,8 @@ package com.snl.facebook;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by Viнt@rь on 15.03.2017
@@ -36,7 +37,6 @@ public final class FacebookUtils {
     public static final String FACEBOOK_PACKAGE_NAME = "com.facebook.katana";
 
     private FacebookUtils() {
-
     }
 
     public static boolean isAppInstalled(@NonNull Context context) {

@@ -11,7 +11,7 @@ android {
         versionCode 1
         versionName "${version}"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -20,17 +20,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation 'com.android.support.test:runner:' + rootProject.ext.supportTestRunner
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:' + rootProject.ext.supportTestEspresso
+    androidTestImplementation 'androidx.test:runner:' + rootProject.ext.supportTestRunner
+    androidTestImplementation 'androidx.test.espresso:espresso-core:' + rootProject.ext.supportTestEspresso
     testImplementation 'junit:junit:' + rootProject.ext.junitVersion
-    implementation 'com.android.support:appcompat-v7:' + rootProject.ext.supportLibraryVersion
-    implementation ('com.google.android.gms:play-services-auth:' + rootProject.ext.playServicesVersion) {
-        exclude module: 'support-v4'
-    }
+    implementation 'androidx.appcompat:appcompat:' + rootProject.ext.androidxLibraryVersion
+    implementation 'com.google.android.gms:play-services-auth:' + rootProject.ext.playServicesAuthVersion
     implementation project(':facebook')
     implementation project(':google')
 }

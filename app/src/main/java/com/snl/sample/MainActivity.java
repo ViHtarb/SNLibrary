@@ -26,10 +26,7 @@ package com.snl.sample;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -41,6 +38,9 @@ import com.snl.core.listener.OnRequestSocialUserListener;
 import com.snl.facebook.FacebookPermissions;
 import com.snl.facebook.FacebookSocialNetwork;
 import com.snl.google.GoogleSocialNetwork;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Created by Viнt@rь on 28.11.2015
@@ -68,72 +68,66 @@ public class MainActivity extends AppCompatActivity {
         final SocialNetwork googleSocialNetwork = SocialNetworkManager.get(GoogleSocialNetwork.ID);
 
         Button loginButton = findViewById(R.id.login_button);
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                googleSocialNetwork.logout();
-                googleSocialNetwork.requestLogin(new OnLoginListener() {
+        loginButton.setOnClickListener(v -> {
+            googleSocialNetwork.logout();
+            googleSocialNetwork.requestLogin(new OnLoginListener() {
+                @Override
+                public void onLoginSuccess(int socialNetworkId) {
+                    Log.d("TEST", "loginSuccess");
+                }
+
+                @Override
+                public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
+                    Log.d("TEST", "onError" + " " + errorMessage);
+                }
+            });
+/*                if (socialNetwork.isConnected()) {
+                socialNetwork.logout();
+            } else {
+                socialNetwork.requestLogin(new OnLoginListener() {
                     @Override
-                    public void onLoginSuccess(int socialNetworkId) {
-                        Log.d("TEST", "loginSuccess");
+                    public void onLoginSuccess(int socialNetworkID) {
+                        Log.d("TEST", "onLoginSuccess");
                     }
 
                     @Override
-                    public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
+                    public void onError(int socialNetworkID, SocialNetwork.Request request, String errorMessage, Object data) {
                         Log.d("TEST", "onError" + " " + errorMessage);
                     }
                 });
-/*                if (socialNetwork.isConnected()) {
-                    socialNetwork.logout();
-                } else {
-                    socialNetwork.requestLogin(new OnLoginListener() {
-                        @Override
-                        public void onLoginSuccess(int socialNetworkID) {
-                            Log.d("TEST", "onLoginSuccess");
-                        }
-
-                        @Override
-                        public void onError(int socialNetworkID, SocialNetwork.Request request, String errorMessage, Object data) {
-                            Log.d("TEST", "onError" + " " + errorMessage);
-                        }
-                    });
-                }*/
-            }
+            }*/
         });
 
         Button friendsButton = findViewById(R.id.friends_button);
-        friendsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                googleSocialNetwork.requestCurrentUser(new OnRequestSocialUserListener() {
-                    @Override
-                    public void onRequestSocialUserSuccess(int socialNetworkId, SocialUser socialUser) {
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable("user", socialUser);
+        friendsButton.setOnClickListener(v -> {
+            googleSocialNetwork.requestCurrentUser(new OnRequestSocialUserListener() {
+                @Override
+                public void onRequestSocialUserSuccess(int socialNetworkId, SocialUser socialUser) {
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("user", socialUser);
 
-                        SocialUser user = bundle.getParcelable("user");
-                        Log.d("TEST", user.toString());
-                    }
+                    SocialUser user = bundle.getParcelable("user");
+                    Log.d("TEST", user.toString());
+                }
 
-                    @Override
-                    public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
+                @Override
+                public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
 
-                    }
-                });
-                /*facebookSocialNetwork.requestFriends(new OnRequestFriendsListener() {
+                }
+            });
+            /*facebookSocialNetwork.requestFriends(new OnRequestFriendsListener() {
 
-                    @Override
-                    public void onRequestFriendsSuccess(int socialNetworkId, List<SocialUser> socialUsers) {
-                        Log.d("TEST", "onRequestFriendsSuccess");
-                        Log.d("TEST", "friends list size = " + socialUsers.size());
-                    }
+                @Override
+                public void onRequestFriendsSuccess(int socialNetworkId, List<SocialUser> socialUsers) {
+                    Log.d("TEST", "onRequestFriendsSuccess");
+                    Log.d("TEST", "friends list size = " + socialUsers.size());
+                }
 
-                    @Override
-                    public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
+                @Override
+                public void onError(int socialNetworkId, SocialNetwork.Request request, String errorMessage, Object data) {
 
-                    }
-                });*/
-            }
+                }
+            });*/
         });
     }
 

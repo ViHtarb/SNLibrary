@@ -29,8 +29,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -65,6 +63,9 @@ import org.json.JSONObject;
 
 import java.util.Collection;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Created by Viнt@rь on 28.11.2015

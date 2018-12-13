@@ -27,7 +27,6 @@ package com.snl.google;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -40,6 +39,8 @@ import com.snl.core.AccessToken;
 import com.snl.core.SocialNetwork;
 import com.snl.core.listener.OnLoginListener;
 import com.snl.core.listener.OnRequestSocialUserListener;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by Viнt@rь on 16.05.2018
@@ -127,7 +128,7 @@ public class GoogleSocialNetwork extends SocialNetwork<AccessToken, ShareContent
                 listener.onError(getId(), Request.USER, "Please login first", null);
                 cancelCurrentUserRequest();
             }
-            return;
+            //return;
         }
 
         //GoogleUser googleUser = new GoogleUser(mAccount);

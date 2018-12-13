@@ -27,7 +27,6 @@ package com.snl.vk;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 
 import com.snl.core.SocialNetwork;
 import com.snl.core.listener.OnLoginListener;
@@ -38,6 +37,8 @@ import com.vk.sdk.api.VKError;
 import com.vk.sdk.api.model.VKAttachments;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by Viнt@rь on 13.04.2016

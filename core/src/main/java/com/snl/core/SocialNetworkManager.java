@@ -25,8 +25,9 @@
 package com.snl.core;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.util.SparseArray;
+
+import androidx.annotation.NonNull;
 
 /**
  * SocialNetworkManager

@@ -24,6 +24,8 @@
 
 package com.snl.core;
 
+import androidx.annotation.NonNull;
+
 /**
  * Universal <code>AccessToken</code> wrapper
  */
@@ -55,10 +57,11 @@ public class AccessToken {
         return mSecret;
     }
 
+    @NonNull
     @Override
     public String toString() {
-        return "AccessToken{" +
-                "token='" + mToken + "\'," +
-                "secret='" + mSecret + "\'}";
+        return "AccessToken:{" +
+                "token='" + mToken + ", " +
+                "secret='" + mSecret + "'}";
     }
 }

@@ -11,22 +11,27 @@ android {
         versionCode 1
         versionName "${version}"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestImplementation 'com.android.support.test:runner:' + rootProject.ext.supportTestRunner
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:' + rootProject.ext.supportTestEspresso
+    androidTestImplementation 'androidx.test:runner:' + rootProject.ext.supportTestRunner
+    androidTestImplementation 'androidx.test.espresso:espresso-core:' + rootProject.ext.supportTestEspresso
     testImplementation 'junit:junit:' + rootProject.ext.junitVersion
     api project(':core')
-    implementation 'com.facebook.android:facebook-android-sdk:4.34.0'
+    implementation 'androidx.appcompat:appcompat:' + rootProject.ext.androidxLibraryVersion
+    implementation 'com.facebook.android:facebook-android-sdk:4.38.1'
 }

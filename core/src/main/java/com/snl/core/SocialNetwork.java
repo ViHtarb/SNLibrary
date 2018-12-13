@@ -29,8 +29,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.snl.core.listener.OnCheckIsFriendListener;
@@ -49,6 +47,9 @@ import com.snl.core.listener.base.SocialNetworkListener;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 /**
  * Abstract implementation of <code>SocialNetwork</code>
